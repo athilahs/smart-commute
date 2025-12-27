@@ -14,29 +14,49 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementation of LineStatusRepository with offline-first architecture.
+ *
+ * Key behaviors:
+ * 1. Emits cached data immediately if available (offline-first)
+ * 2. Then attempts to fetch fresh data from TfL API
+ * 3. Updates cache with fresh data on successful fetch
+ * 4. Falls back to cached data on network/API errors
+ * 5. Only emits error state if no cached data exists
+ *
+ * This ensures users always see data quickly, even with poor connectivity.
+ */
 @Singleton
 class LineStatusRepositoryImpl @Inject constructor(
     private val tflApiService: TflApiService,
     private val lineStatusDao: LineStatusDao
 ) : LineStatusRepository {
 
+    /**
+     * Returns a Flow that emits line statuses following offline-first pattern:
+     * 1. Emits Loading state
+     * 2. If cached data exists, emit it immediately (fast user experience)
+     * 3. Attempt to fetch fresh data from API
+     * 4. On success: cache and emit fresh data
+     * 5. On failure: keep showing cached data if available, otherwise emit error
+     */
     override fun getLineStatuses(): Flow<NetworkResult<List<UndergroundLine>>> = flow {
         emit(NetworkResult.Loading)
 
-        // First, try to load cached data
+        // Attempt to load cached data first (offline-first approach)
         val cachedData = try {
             lineStatusDao.getAllLineStatuses().first()
         } catch (e: Exception) {
             emptyList()
         }
 
-        // If we have cached data, emit it immediately
+        // Emit cached data immediately if available for fast UX
         if (cachedData.isNotEmpty()) {
             val domainModels = cachedData.map { LineStatusMapper.entityToDomain(it) }
             emit(NetworkResult.Success(domainModels))
         }
 
-        // Then try to fetch fresh data
+        // Attempt to fetch fresh data from TfL API
         try {
             val apiKey = BuildConfig.TFL_API_KEY
             val response = tflApiService.getLineStatus(apiKey)
@@ -46,16 +66,18 @@ class LineStatusRepositoryImpl @Inject constructor(
                 if (data != null) {
                     val domainModels = data.map { LineStatusMapper.dtoToDomain(it) }
 
-                    // Cache to database
+                    // Cache fresh data to Room database with current timestamp
                     val timestamp = System.currentTimeMillis()
                     val entities = domainModels.map { LineStatusMapper.domainToEntity(it, timestamp) }
                     lineStatusDao.insertAll(entities)
 
+                    // Emit fresh data to UI
                     emit(NetworkResult.Success(domainModels))
                 } else {
                     emit(NetworkResult.Error("Empty response from server"))
                 }
             } else {
+                // Map HTTP error codes to user-friendly messages
                 val errorMessage = when (response.code()) {
                     401 -> "Configuration error: Invalid API key"
                     429 -> "Service temporarily unavailable: Rate limit exceeded"
@@ -63,24 +85,32 @@ class LineStatusRepositoryImpl @Inject constructor(
                     else -> "Unable to fetch status (${response.code()})"
                 }
 
-                // If we had cached data, it was already emitted above
+                // Only emit error if we don't have cached data to show
+                // If cached data was emitted above, user continues seeing that
                 if (cachedData.isEmpty()) {
                     emit(NetworkResult.Error(errorMessage, response.code()))
                 }
             }
         } catch (e: IOException) {
-            // Network error (no connection)
+            // Network error (no connection, timeout, etc.)
+            // Only emit error if no cached data is available
             if (cachedData.isEmpty()) {
                 emit(NetworkResult.Error("No connection. Please check your internet connection."))
             }
-            // If we had cached data, it was already emitted above
+            // If cached data exists, user already sees it from earlier emit
         } catch (e: Exception) {
+            // Unexpected error
             if (cachedData.isEmpty()) {
                 emit(NetworkResult.Error("An error occurred: ${e.message}"))
             }
         }
     }
 
+    /**
+     * Refreshes line statuses from API and updates cache.
+     * Silently fails on error - UI continues showing cached data.
+     * Called by pull-to-refresh and manual refresh button.
+     */
     override suspend fun refreshLineStatuses() {
         try {
             val apiKey = BuildConfig.TFL_API_KEY
@@ -96,7 +126,8 @@ class LineStatusRepositoryImpl @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            // Silently fail on refresh - the UI will continue showing cached data
+            // Silently fail on refresh - UI will continue showing cached data
+            // ViewModel will handle showing error banners if needed
         }
     }
 

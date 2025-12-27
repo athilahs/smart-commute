@@ -7,8 +7,19 @@ import com.smartcommute.feature.linestatus.domain.model.ServiceStatus
 import com.smartcommute.feature.linestatus.domain.model.StatusType
 import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 
+/**
+ * Maps data between different layers of the application:
+ * - DTO (Data Transfer Objects) from TfL API responses
+ * - Domain models used in business logic
+ * - Entity objects stored in Room database
+ */
 object LineStatusMapper {
 
+    /**
+     * Converts TfL API DTO to domain model.
+     * Takes the first status from the lineStatuses array as TfL typically returns one status per line.
+     * Falls back to SERVICE_DISRUPTION if no status is available.
+     */
     fun dtoToDomain(dto: LineStatusDto): UndergroundLine {
         val statusDto = dto.lineStatuses.firstOrNull()
         val serviceStatus = if (statusDto != null) {
@@ -25,6 +36,10 @@ object LineStatusMapper {
         )
     }
 
+    /**
+     * Converts domain model to database entity.
+     * Includes timestamp parameter to track when the data was cached.
+     */
     fun domainToEntity(domain: UndergroundLine, timestamp: Long): LineStatusEntity {
         return LineStatusEntity(
             id = domain.id,
@@ -37,6 +52,10 @@ object LineStatusMapper {
         )
     }
 
+    /**
+     * Converts database entity back to domain model.
+     * Falls back to SERVICE_DISRUPTION if the stored StatusType enum value is invalid.
+     */
     fun entityToDomain(entity: LineStatusEntity): UndergroundLine {
         val statusType = try {
             StatusType.valueOf(entity.statusType)
@@ -56,9 +75,19 @@ object LineStatusMapper {
         )
     }
 
+    /**
+     * Maps TfL API severity codes to app's StatusType enum.
+     *
+     * TfL severity scale (from API documentation):
+     * - 10 = Good Service (normal operations)
+     * - 9 = Minor Delays (slight disruptions)
+     * - 8, 7, 6 = Major Delays (significant disruptions)
+     * - 5, 4, 3, 2 = Severe Delays (major disruptions)
+     * - 1, 0 = Closure (line not operating)
+     *
+     * Any unrecognized severity code maps to SERVICE_DISRUPTION as a safe default.
+     */
     private fun mapToServiceStatus(dto: LineStatusResponseDto): ServiceStatus {
-        // TfL severity mapping: https://api.tfl.gov.uk/Line/Meta/Severity
-        // 10 = Good Service, 9 = Minor Delays, 6 = Severe Delays, etc.
         val type = when (dto.statusSeverity) {
             10 -> StatusType.GOOD_SERVICE
             9 -> StatusType.MINOR_DELAYS
