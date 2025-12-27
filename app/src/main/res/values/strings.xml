@@ -27,6 +27,9 @@
     <string name="error_no_connection">No connection. Please check your internet connection.</string>
     <string name="error_unable_to_fetch">Unable to fetch status</string>
     <string name="error_config">Configuration error: Invalid API key</string>
+    <string name="error_empty_response">Empty response from server</string>
+    <string name="error_occurred">An error occurred: %s</string>
+    <string name="error_rate_limit">Service temporarily unavailable: Rate limit exceeded</string>
 
     <!-- Content Descriptions -->
     <string name="cd_refresh_status">Refresh status</string>

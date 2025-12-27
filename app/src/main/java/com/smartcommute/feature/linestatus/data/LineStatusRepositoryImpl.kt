@@ -1,12 +1,16 @@
 package com.smartcommute.feature.linestatus.data
 
+import android.content.Context
 import com.smartcommute.BuildConfig
+import com.smartcommute.R
 import com.smartcommute.core.network.NetworkResult
 import com.smartcommute.feature.linestatus.data.local.dao.LineStatusDao
 import com.smartcommute.feature.linestatus.data.remote.TflApiService
-import com.smartcommute.feature.linestatus.data.remote.mapper.LineStatusMapper
+import com.smartcommute.feature.linestatus.data.remote.mapper.toDomain
+import com.smartcommute.feature.linestatus.data.remote.mapper.toEntity
 import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 import com.smartcommute.feature.linestatus.domain.repository.LineStatusRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -28,6 +32,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class LineStatusRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val tflApiService: TflApiService,
     private val lineStatusDao: LineStatusDao
 ) : LineStatusRepository {
@@ -52,7 +57,7 @@ class LineStatusRepositoryImpl @Inject constructor(
 
         // Emit cached data immediately if available for fast UX
         if (cachedData.isNotEmpty()) {
-            val domainModels = cachedData.map { LineStatusMapper.entityToDomain(it) }
+            val domainModels = cachedData.map { it.toDomain() }
             emit(NetworkResult.Success(domainModels))
         }
 
@@ -64,25 +69,25 @@ class LineStatusRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val data = response.body()
                 if (data != null) {
-                    val domainModels = data.map { LineStatusMapper.dtoToDomain(it) }
+                    val domainModels = data.map { it.toDomain() }
 
                     // Cache fresh data to Room database with current timestamp
                     val timestamp = System.currentTimeMillis()
-                    val entities = domainModels.map { LineStatusMapper.domainToEntity(it, timestamp) }
+                    val entities = domainModels.map { it.toEntity(timestamp) }
                     lineStatusDao.insertAll(entities)
 
                     // Emit fresh data to UI
                     emit(NetworkResult.Success(domainModels))
                 } else {
-                    emit(NetworkResult.Error("Empty response from server"))
+                    emit(NetworkResult.Error(context.getString(R.string.error_empty_response)))
                 }
             } else {
                 // Map HTTP error codes to user-friendly messages
                 val errorMessage = when (response.code()) {
-                    401 -> "Configuration error: Invalid API key"
-                    429 -> "Service temporarily unavailable: Rate limit exceeded"
-                    500, 502, 503, 504 -> "Service temporarily unavailable"
-                    else -> "Unable to fetch status (${response.code()})"
+                    401 -> context.getString(R.string.error_config)
+                    429 -> context.getString(R.string.error_rate_limit)
+                    500, 502, 503, 504 -> context.getString(R.string.banner_service_unavailable)
+                    else -> context.getString(R.string.error_unable_to_fetch)
                 }
 
                 // Only emit error if we don't have cached data to show
@@ -95,13 +100,13 @@ class LineStatusRepositoryImpl @Inject constructor(
             // Network error (no connection, timeout, etc.)
             // Only emit error if no cached data is available
             if (cachedData.isEmpty()) {
-                emit(NetworkResult.Error("No connection. Please check your internet connection."))
+                emit(NetworkResult.Error(context.getString(R.string.error_no_connection)))
             }
             // If cached data exists, user already sees it from earlier emit
         } catch (e: Exception) {
             // Unexpected error
             if (cachedData.isEmpty()) {
-                emit(NetworkResult.Error("An error occurred: ${e.message}"))
+                emit(NetworkResult.Error(context.getString(R.string.error_occurred, e.message ?: "")))
             }
         }
     }
@@ -119,9 +124,9 @@ class LineStatusRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val data = response.body()
                 if (data != null) {
-                    val domainModels = data.map { LineStatusMapper.dtoToDomain(it) }
+                    val domainModels = data.map { it.toDomain() }
                     val timestamp = System.currentTimeMillis()
-                    val entities = domainModels.map { LineStatusMapper.domainToEntity(it, timestamp) }
+                    val entities = domainModels.map { it.toEntity(timestamp) }
                     lineStatusDao.insertAll(entities)
                 }
             }

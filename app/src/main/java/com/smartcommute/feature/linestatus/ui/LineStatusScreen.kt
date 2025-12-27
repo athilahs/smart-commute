@@ -14,9 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.smartcommute.R
 import com.smartcommute.core.ui.theme.*
 import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 import com.smartcommute.feature.linestatus.ui.components.LineStatusItem
@@ -34,12 +36,12 @@ fun LineStatusScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tube Status") },
+                title = { Text(stringResource(R.string.tube_status_title)) },
                 actions = {
                     IconButton(onClick = { viewModel.refreshLineStatuses() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh status"
+                            contentDescription = stringResource(R.string.cd_refresh_status)
                         )
                     }
                 }
@@ -49,7 +51,7 @@ fun LineStatusScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             when (val state = uiState) {
                 is LineStatusUiState.Loading -> {
@@ -64,7 +66,7 @@ fun LineStatusScreen(
                         Column(modifier = Modifier.fillMaxSize()) {
                             if (state.isOffline) {
                                 Banner(
-                                    message = "No connection",
+                                    message = stringResource(R.string.banner_no_connection),
                                     backgroundColor = MaterialTheme.colorScheme.errorContainer,
                                     textColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
@@ -133,7 +135,7 @@ private fun LastUpdatedText(timestamp: Long) {
     val formattedTime = dateFormat.format(Date(timestamp))
 
     Text(
-        text = "Last updated: $formattedTime",
+        text = stringResource(R.string.last_updated_format, formattedTime),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -180,7 +182,7 @@ private fun ErrorState(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text(stringResource(R.string.action_retry))
         }
     }
 }
