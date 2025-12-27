@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.smartcommute.core.ui.theme.SmartCommuteTheme
-import com.smartcommute.feature.linestatus.ui.LineStatusScreen
+import com.smartcommute.ui.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SmartCommuteTheme {
-                LineStatusScreen()
+                MainScreen()
             }
         }
     }

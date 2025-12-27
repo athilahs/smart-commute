@@ -9,6 +9,7 @@ coroutines = "1.10.2"
 lifecycle = "2.10.0"
 navigation = "2.9.6"
 material = "1.13.0"
+kotlinx-serialization = "1.9.0"
 
 [libraries]
 # Compose
@@ -52,6 +53,9 @@ lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtim
 # Navigation
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 
+# Serialization
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
 # Core Android
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.17.0" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.12.2" }
@@ -60,6 +64,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 [plugins]
 android-application = { id = "com.android.application", version = "8.13.2" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version = "2.3.3" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
