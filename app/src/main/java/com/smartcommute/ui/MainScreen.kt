@@ -41,7 +41,7 @@ fun MainScreen() {
                         it.hasRoute(NavigationScreen.LineStatus::class)
                     } == true,
                     onClick = {
-                        navController.navigate(NavigationScreen.LineStatus) {
+                        navController.navigate(NavigationScreen.LineStatus.route) {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
                             popUpTo(navController.graph.findStartDestination().id) {
