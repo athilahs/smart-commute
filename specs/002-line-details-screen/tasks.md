@@ -187,6 +187,9 @@
 - [ ] T086 [P] Code cleanup: Remove unused imports and TODOs
 - [ ] T087 [P] Verify all string literals are in strings.xml (no hardcoded text)
 - [ ] T088 Final build and APK size verification (<2MB increase for images)
+- [ ] T089 Adjust line icon positioning to be centered between image and details section (not over image) in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LineDetailsHeader.kt
+- [ ] T090 Implement collapsible top bar with scroll behavior: collapse image on scroll up, show line title in top bar, hide icon, show status as subtitle in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
+- [ ] T091 Update hero section status text to show short version only (e.g., "Good Service") and move long description to StatusSummaryCard in details section
 
 ---
 
@@ -295,7 +298,7 @@ With multiple developers after Foundational phase completes:
 
 ## Task Summary
 
-**Total Tasks**: 88
+**Total Tasks**: 91
 
 **Tasks per Phase**:
 - Phase 1 (Setup): 7 tasks
@@ -304,7 +307,7 @@ With multiple developers after Foundational phase completes:
 - Phase 4 (User Story 2): 16 tasks
 - Phase 5 (User Story 3): 8 tasks
 - Phase 6 (Tube Status Integration): 10 tasks
-- Phase 7 (Polish): 18 tasks
+- Phase 7 (Polish): 21 tasks
 
 **Parallel Opportunities**: 32 tasks marked [P] can run in parallel
 
