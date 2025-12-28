@@ -30,6 +30,7 @@ import java.util.*
 @Composable
 fun LineStatusScreen(
     onLineClick: (String) -> Unit = {},
+    @Suppress("DEPRECATION")
     viewModel: LineStatusViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()

@@ -24,12 +24,13 @@ import com.smartcommute.feature.linedetails.ui.components.LoadingState
 @Composable
 fun LineDetailsScreen(
     onNavigateBack: () -> Unit,
+    @Suppress("DEPRECATION")
     viewModel: LineDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topAppBar = {
+        topBar = {
             TopAppBar(
                 title = { Text("Line Details") },
                 navigationIcon = {

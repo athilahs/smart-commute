@@ -6,6 +6,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.smartcommute.feature.linestatus.data.local.LineStatusDatabase
 import com.smartcommute.feature.linestatus.data.local.dao.TubeLineDao
+import com.smartcommute.feature.linedetails.data.local.dao.LineDetailsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -117,5 +118,11 @@ object DatabaseModule {
     @Singleton
     fun provideTubeLineDao(database: LineStatusDatabase): TubeLineDao {
         return database.tubeLineDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLineDetailsDao(database: LineStatusDatabase): LineDetailsDao {
+        return database.lineDetailsDao()
     }
 }
