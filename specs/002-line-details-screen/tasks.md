@@ -100,22 +100,22 @@
 
 ### Implementation for User Story 2
 
-- [ ] T037 [P] [US2] Create DisruptionCard composable with expand/collapse functionality in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/DisruptionCard.kt
-- [ ] T038 [P] [US2] Create ClosureCard composable with schedule and alternative service display in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/ClosureCard.kt
-- [ ] T039 [P] [US2] Create CrowdingCard composable with level indicator and color coding in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/CrowdingCard.kt
-- [ ] T040 [P] [US2] Create StatusSummaryCard composable for overall line status in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/StatusSummaryCard.kt
-- [ ] T041 [P] [US2] Create EmptyStateCard composable for missing data indicators in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/EmptyStateCard.kt
-- [ ] T042 [US2] Add LazyColumn body section to LineDetailsScreen with Card components
-- [ ] T043 [US2] Implement expandable text with AnimatedVisibility for disruptions using maxLines = 3 when collapsed (per FR-014 requirement for "first 2-3 lines" preview)
-- [ ] T044 [US2] Implement expandable text with AnimatedVisibility for closures using maxLines = 3 when collapsed (per FR-014)
-- [ ] T045 [US2] Add toggleDisruptionExpansion function to LineDetailsViewModel
-- [ ] T046 [US2] Add toggleClosureExpansion function to LineDetailsViewModel
-- [ ] T047 [US2] Update LineDetailsUiState.Success to include expandedDisruptions and expandedClosures sets
-- [ ] T048 [US2] Add 16dp horizontal padding and 8dp vertical spacing between cards following Material Design
-- [ ] T049 [US2] Implement placeholder display when headerImageRes is "placeholder" or missing
-- [ ] T050 [US2] Display EmptyStateCard when disruptions list is empty
-- [ ] T051 [US2] Display EmptyStateCard when closures list is empty
-- [ ] T052 [US2] Display EmptyStateCard when crowding data is null
+- [x] T037 [P] [US2] Create DisruptionCard composable with expand/collapse functionality in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/DisruptionCard.kt
+- [x] T038 [P] [US2] Create ClosureCard composable with schedule and alternative service display in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/ClosureCard.kt
+- [x] T039 [P] [US2] Create CrowdingCard composable with level indicator and color coding in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/CrowdingCard.kt
+- [x] T040 [P] [US2] Create StatusSummaryCard composable for overall line status in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/StatusSummaryCard.kt
+- [x] T041 [P] [US2] Create EmptyStateCard composable for missing data indicators in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/EmptyStateCard.kt
+- [x] T042 [US2] Add LazyColumn body section to LineDetailsScreen with Card components
+- [x] T043 [US2] Implement expandable text with AnimatedVisibility for disruptions using maxLines = 3 when collapsed (per FR-014 requirement for "first 2-3 lines" preview)
+- [x] T044 [US2] Implement expandable text with AnimatedVisibility for closures using maxLines = 3 when collapsed (per FR-014)
+- [x] T045 [US2] Add toggleDisruptionExpansion function to LineDetailsViewModel
+- [x] T046 [US2] Add toggleClosureExpansion function to LineDetailsViewModel
+- [x] T047 [US2] Update LineDetailsUiState.Success to include expandedDisruptions and expandedClosures sets
+- [x] T048 [US2] Add 16dp horizontal padding and 8dp vertical spacing between cards following Material Design
+- [x] T049 [US2] Implement placeholder display when headerImageRes is "placeholder" or missing
+- [x] T050 [US2] Display EmptyStateCard when disruptions list is empty
+- [x] T051 [US2] Display EmptyStateCard when closures list is empty
+- [x] T052 [US2] Display EmptyStateCard when crowding data is null
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - comprehensive line details are now fully displayed with all available information.
 
@@ -150,16 +150,16 @@
 
 **Note**: This phase modifies the existing Tube Status Screen feature to populate data that Line Details Screen will display.
 
-- [ ] T061 [P] Add disruption endpoints to TflApiService in app/src/main/java/com/smartcommute/core/network/TflApiService.kt
-- [ ] T062 [P] Add closure endpoints to TflApiService
-- [ ] T063 [P] Create DTOs for disruptions, closures, and crowding from TFL API
-- [ ] T064 Update LineStatusRepositoryImpl to fetch disruptions/closures/crowding during refresh in app/src/main/java/com/smartcommute/feature/linestatus/data/repository/LineStatusRepositoryImpl.kt
-- [ ] T065 Implement entity mapping from TFL API DTOs to DisruptionEntity, ClosureEntity, CrowdingEntity
-- [ ] T066 Update refreshLineStatuses to cache disruptions using LineDetailsDao.insertDisruptions
-- [ ] T067 Update refreshLineStatuses to cache closures using LineDetailsDao.insertClosures
-- [ ] T068 Update refreshLineStatuses to cache crowding using LineDetailsDao.insertCrowding
-- [ ] T069 Set headerImageRes field based on lineId (e.g., "line_header_bakerloo") during caching
-- [ ] T070 Handle comma-separated station names parsing from TFL API for affectedStops and affectedStations fields
+- [x] T061 [P] Add disruption endpoints to TflApiService in app/src/main/java/com/smartcommute/core/network/TflApiService.kt
+- [x] T062 [P] Add closure endpoints to TflApiService
+- [x] T063 [P] Create DTOs for disruptions, closures, and crowding from TFL API
+- [x] T064 Update LineStatusRepositoryImpl to fetch disruptions/closures/crowding during refresh in app/src/main/java/com/smartcommute/feature/linestatus/data/repository/LineStatusRepositoryImpl.kt
+- [x] T065 Implement entity mapping from TFL API DTOs to DisruptionEntity, ClosureEntity, CrowdingEntity
+- [x] T066 Update refreshLineStatuses to cache disruptions using LineDetailsDao.insertDisruptions
+- [x] T067 Update refreshLineStatuses to cache closures using LineDetailsDao.insertClosures
+- [x] T068 Update refreshLineStatuses to cache crowding using LineDetailsDao.insertCrowding
+- [x] T069 Set headerImageRes field based on lineId (e.g., "line_header_bakerloo") during caching
+- [x] T070 Handle comma-separated station names parsing from TFL API for affectedStops and affectedStations fields
 
 **Checkpoint**: Tube Status Screen now populates all tables. Verify data is cached by inspecting database with Device File Explorer.
 
