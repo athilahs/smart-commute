@@ -4,6 +4,7 @@
 
     <!-- Screen Titles -->
     <string name="tube_status_title">Tube Status</string>
+    <string name="line_details_title">Line Details</string>
 
     <!-- Status Types -->
     <string name="status_good_service">Good Service</string>

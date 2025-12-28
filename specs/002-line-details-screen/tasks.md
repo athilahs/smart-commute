@@ -29,13 +29,13 @@
 - **v1 (current)**: Single `line_status` table with basic tube line info (id, name, status, severity)
 - **v2 (target)**: Renamed `tube_lines` table (adds headerImageRes, cacheExpiry) + new tables for `disruptions`, `closures`, `crowding` with foreign key relationships
 
-- [ ] T001 Update LineStatusDatabase to version 2 and rename line_status table to tube_lines in app/src/main/java/com/smartcommute/feature/linestatus/data/local/LineStatusDatabase.kt
-- [ ] T002 [P] Create MIGRATION_1_2 in app/src/main/java/com/smartcommute/core/di/DatabaseModule.kt
-- [ ] T003 [P] Rename LineStatusEntity to TubeLineEntity and update table name in app/src/main/java/com/smartcommute/feature/linestatus/data/local/entity/LineStatusEntity.kt
-- [ ] T004 [P] Add headerImageRes and cacheExpiry columns to TubeLineEntity
-- [ ] T005 Rename LineStatusDao to TubeLineDao and update queries to use tube_lines table in app/src/main/java/com/smartcommute/feature/linestatus/data/local/dao/LineStatusDao.kt
-- [ ] T006 Update DatabaseModule to provide migration and new DAO references in app/src/main/java/com/smartcommute/core/di/DatabaseModule.kt
-- [ ] T007 [P] Update LineStatusRepositoryImpl to use renamed TubeLineDao in app/src/main/java/com/smartcommute/feature/linestatus/data/repository/LineStatusRepositoryImpl.kt
+- [x] T001 Update LineStatusDatabase to version 2 and rename line_status table to tube_lines in app/src/main/java/com/smartcommute/feature/linestatus/data/local/LineStatusDatabase.kt
+- [x] T002 [P] Create MIGRATION_1_2 in app/src/main/java/com/smartcommute/core/di/DatabaseModule.kt
+- [x] T003 [P] Rename LineStatusEntity to TubeLineEntity and update table name in app/src/main/java/com/smartcommute/feature/linestatus/data/local/entity/LineStatusEntity.kt
+- [x] T004 [P] Add headerImageRes and cacheExpiry columns to TubeLineEntity
+- [x] T005 Rename LineStatusDao to TubeLineDao and update queries to use tube_lines table in app/src/main/java/com/smartcommute/feature/linestatus/data/local/dao/LineStatusDao.kt
+- [x] T006 Update DatabaseModule to provide migration and new DAO references in app/src/main/java/com/smartcommute/core/di/DatabaseModule.kt
+- [x] T007 [P] Update LineStatusRepositoryImpl to use renamed TubeLineDao in app/src/main/java/com/smartcommute/feature/linestatus/data/repository/LineStatusRepositoryImpl.kt
 
 ---
 
@@ -45,16 +45,16 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T008 [P] Create DisruptionEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/DisruptionEntity.kt
-- [ ] T009 [P] Create ClosureEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/ClosureEntity.kt
-- [ ] T010 [P] Create CrowdingEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/CrowdingEntity.kt
-- [ ] T011 Create LineDetailsDao with queries for disruptions, closures, and crowding in app/src/main/java/com/smartcommute/feature/linedetails/data/local/dao/LineDetailsDao.kt
-- [ ] T012 Add LineDetailsDao to LineStatusDatabase in app/src/main/java/com/smartcommute/feature/linestatus/data/local/LineStatusDatabase.kt
-- [ ] T013 [P] Create Disruption domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Disruption.kt
-- [ ] T014 [P] Create Closure domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Closure.kt
-- [ ] T015 [P] Create Crowding domain model and CrowdingLevel enum in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Crowding.kt
-- [ ] T016 [P] Create StatusSeverity enum if not exists in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/StatusSeverity.kt
-- [ ] T017 [P] Create UndergroundLineDetails domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/UndergroundLineDetails.kt
+- [x] T008 [P] Create DisruptionEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/DisruptionEntity.kt
+- [x] T009 [P] Create ClosureEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/ClosureEntity.kt
+- [x] T010 [P] Create CrowdingEntity in app/src/main/java/com/smartcommute/feature/linedetails/data/local/entity/CrowdingEntity.kt
+- [x] T011 Create LineDetailsDao with queries for disruptions, closures, and crowding in app/src/main/java/com/smartcommute/feature/linedetails/data/local/dao/LineDetailsDao.kt
+- [x] T012 Add LineDetailsDao to LineStatusDatabase in app/src/main/java/com/smartcommute/feature/linestatus/data/local/LineStatusDatabase.kt
+- [x] T013 [P] Create Disruption domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Disruption.kt
+- [x] T014 [P] Create Closure domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Closure.kt
+- [x] T015 [P] Create Crowding domain model and CrowdingLevel enum in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/Crowding.kt
+- [x] T016 [P] Create StatusSeverity enum if not exists in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/StatusSeverity.kt
+- [x] T017 [P] Create UndergroundLineDetails domain model in app/src/main/java/com/smartcommute/feature/linedetails/domain/model/UndergroundLineDetails.kt
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -68,25 +68,25 @@
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Create LineDetailsRepository interface in app/src/main/java/com/smartcommute/feature/linedetails/domain/repository/LineDetailsRepository.kt
-- [ ] T019 [P] [US1] Create TubeLineMapper with toBasicDomain and toDetailedDomain functions in app/src/main/java/com/smartcommute/feature/linedetails/data/mapper/TubeLineMapper.kt
-- [ ] T020 [US1] Create LineDetailsRepositoryImpl with offline-only data access in app/src/main/java/com/smartcommute/feature/linedetails/data/repository/LineDetailsRepositoryImpl.kt
-- [ ] T021 [P] [US1] Create LineDetailsModule to bind repository in app/src/main/java/com/smartcommute/core/di/LineDetailsModule.kt
-- [ ] T022 [P] [US1] Create LineDetailsUiState sealed interface in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsUiState.kt
-- [ ] T023 [US1] Create LineDetailsViewModel with repository integration in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsViewModel.kt
-- [ ] T024 [P] [US1] Add LineDetails navigation route to NavigationScreen in app/src/main/java/com/smartcommute/core/navigation/NavigationScreen.kt
-- [ ] T025 [US1] Add LineDetailsScreen composable to AppNavigation in app/src/main/java/com/smartcommute/core/navigation/AppNavigation.kt
-- [ ] T026 [P] [US1] Create LineDetailsHeader composable with hero image and gradient scrim in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LineDetailsHeader.kt
-- [ ] T027 [P] [US1] Create LoadingState composable in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LoadingState.kt
-- [ ] T028 [P] [US1] Create ErrorState composable with back button in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/ErrorState.kt
-- [ ] T029 [US1] Create LineDetailsScreen main composable with Scaffold and TopAppBar in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
-- [ ] T030 [US1] Update LineStatusScreen to add onLineClick navigation parameter in app/src/main/java/com/smartcommute/feature/linestatus/ui/LineStatusScreen.kt
+- [x] T018 [P] [US1] Create LineDetailsRepository interface in app/src/main/java/com/smartcommute/feature/linedetails/domain/repository/LineDetailsRepository.kt
+- [x] T019 [P] [US1] Create TubeLineMapper with toBasicDomain and toDetailedDomain functions in app/src/main/java/com/smartcommute/feature/linedetails/data/mapper/TubeLineMapper.kt
+- [x] T020 [US1] Create LineDetailsRepositoryImpl with offline-only data access in app/src/main/java/com/smartcommute/feature/linedetails/data/repository/LineDetailsRepositoryImpl.kt
+- [x] T021 [P] [US1] Create LineDetailsModule to bind repository in app/src/main/java/com/smartcommute/core/di/LineDetailsModule.kt
+- [x] T022 [P] [US1] Create LineDetailsUiState sealed interface in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsUiState.kt
+- [x] T023 [US1] Create LineDetailsViewModel with repository integration in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsViewModel.kt
+- [x] T024 [P] [US1] Add LineDetails navigation route to NavigationScreen in app/src/main/java/com/smartcommute/core/navigation/NavigationScreen.kt
+- [x] T025 [US1] Add LineDetailsScreen composable to AppNavigation in app/src/main/java/com/smartcommute/core/navigation/AppNavigation.kt
+- [x] T026 [P] [US1] Create LineDetailsHeader composable with hero image and gradient scrim in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LineDetailsHeader.kt
+- [x] T027 [P] [US1] Create LoadingState composable in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LoadingState.kt
+- [x] T028 [P] [US1] Create ErrorState composable with back button in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/ErrorState.kt
+- [x] T029 [US1] Create LineDetailsScreen main composable with Scaffold and TopAppBar in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
+- [x] T030 [US1] Update LineStatusScreen to add onLineClick navigation parameter in app/src/main/java/com/smartcommute/feature/linestatus/ui/LineStatusScreen.kt
 - [ ] T031 [P] [US1] Generate and add 11 high-resolution station header images (1440x960px WebP, anonymized crowds) to app/src/main/res/drawable-nodpi/
-- [ ] T032 [P] [US1] Add string resources for line details screen in app/src/main/res/values/strings.xml
-- [ ] T033 [US1] Implement BoxWithConstraints for responsive 1/3 height image calculation in LineDetailsHeader
-- [ ] T034 [US1] Add dark gradient scrim overlay to header image for text readability using Brush.verticalGradient from Color.Transparent to Color.Black with 0.7f alpha (per FR-004 and SC-004 contrast requirement)
-- [ ] T035 [US1] Position line icon at bottom-right of header with 16dp padding
-- [ ] T036 [US1] Position line name and status text bottom-left of header with 16dp padding
+- [x] T032 [P] [US1] Add string resources for line details screen in app/src/main/res/values/strings.xml
+- [x] T033 [US1] Implement BoxWithConstraints for responsive 1/3 height image calculation in LineDetailsHeader
+- [x] T034 [US1] Add dark gradient scrim overlay to header image for text readability using Brush.verticalGradient from Color.Transparent to Color.Black with 0.7f alpha (per FR-004 and SC-004 contrast requirement)
+- [x] T035 [US1] Position line icon at bottom-right of header with 16dp padding
+- [x] T036 [US1] Position line name and status text bottom-left of header with 16dp padding
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - basic line details screen displays with header, icon, name, and status. Test independently before proceeding.
 

@@ -2,8 +2,11 @@ package com.smartcommute.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.smartcommute.feature.linedetails.ui.LineDetailsScreen
 import com.smartcommute.feature.linestatus.ui.LineStatusScreen
 
 @Composable
@@ -16,7 +19,26 @@ fun AppNavigation(
         startDestination = startDestination
     ) {
         composable(NavigationScreen.LineStatus.route) {
-            LineStatusScreen()
+            LineStatusScreen(
+                onLineClick = { lineId ->
+                    navController.navigate("line_details/$lineId")
+                }
+            )
+        }
+
+        composable(
+            route = "line_details/{lineId}",
+            arguments = listOf(
+                navArgument("lineId") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            LineDetailsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // Future feature routes will be added here

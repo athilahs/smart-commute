@@ -25,6 +25,7 @@ import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 fun LineStatusItem(
     line: UndergroundLine,
     lineColor: Color,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val statusTextResId = when (line.status.type) {
@@ -43,7 +44,8 @@ fun LineStatusItem(
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = contentDesc },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier

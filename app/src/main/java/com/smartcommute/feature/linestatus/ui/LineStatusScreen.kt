@@ -29,6 +29,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LineStatusScreen(
+    onLineClick: (String) -> Unit = {},
     viewModel: LineStatusViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -74,7 +75,10 @@ fun LineStatusScreen(
                             if (state.lastUpdated != null) {
                                 LastUpdatedText(timestamp = state.lastUpdated)
                             }
-                            LineStatusList(lines = state.lines)
+                            LineStatusList(
+                                lines = state.lines,
+                                onLineClick = onLineClick
+                            )
                         }
                     }
                 }
@@ -94,7 +98,10 @@ fun LineStatusScreen(
                                 if (state.lastUpdated != null) {
                                     LastUpdatedText(timestamp = state.lastUpdated)
                                 }
-                                LineStatusList(lines = state.cachedLines)
+                                LineStatusList(
+                                    lines = state.cachedLines,
+                                    onLineClick = onLineClick
+                                )
                             }
                         }
                     } else {
@@ -146,7 +153,10 @@ private fun LastUpdatedText(timestamp: Long) {
 }
 
 @Composable
-private fun LineStatusList(lines: List<UndergroundLine>) {
+private fun LineStatusList(
+    lines: List<UndergroundLine>,
+    onLineClick: (String) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -156,7 +166,8 @@ private fun LineStatusList(lines: List<UndergroundLine>) {
             val lineColor = getLineColor(line.id)
             LineStatusItem(
                 line = line,
-                lineColor = lineColor
+                lineColor = lineColor,
+                onClick = { onLineClick(line.id) }
             )
         }
     }

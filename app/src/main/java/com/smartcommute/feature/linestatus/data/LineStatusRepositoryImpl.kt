@@ -4,7 +4,7 @@ import android.content.Context
 import com.smartcommute.BuildConfig
 import com.smartcommute.R
 import com.smartcommute.core.network.NetworkResult
-import com.smartcommute.feature.linestatus.data.local.dao.LineStatusDao
+import com.smartcommute.feature.linestatus.data.local.dao.TubeLineDao
 import com.smartcommute.feature.linestatus.data.remote.TflApiService
 import com.smartcommute.feature.linestatus.data.remote.mapper.toDomain
 import com.smartcommute.feature.linestatus.data.remote.mapper.toEntity
@@ -34,7 +34,7 @@ import javax.inject.Singleton
 class LineStatusRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val tflApiService: TflApiService,
-    private val lineStatusDao: LineStatusDao
+    private val tubeLineDao: TubeLineDao
 ) : LineStatusRepository {
 
     /**
@@ -50,7 +50,7 @@ class LineStatusRepositoryImpl @Inject constructor(
 
         // Attempt to load cached data first (offline-first approach)
         val cachedData = try {
-            lineStatusDao.getAllLineStatuses().first()
+            tubeLineDao.getAllLineStatuses().first()
         } catch (e: Exception) {
             emptyList()
         }
@@ -74,7 +74,7 @@ class LineStatusRepositoryImpl @Inject constructor(
                     // Cache fresh data to Room database with current timestamp
                     val timestamp = System.currentTimeMillis()
                     val entities = domainModels.map { it.toEntity(timestamp) }
-                    lineStatusDao.insertAll(entities)
+                    tubeLineDao.insertAll(entities)
 
                     // Emit fresh data to UI
                     emit(NetworkResult.Success(domainModels))
@@ -127,7 +127,7 @@ class LineStatusRepositoryImpl @Inject constructor(
                     val domainModels = data.map { it.toDomain() }
                     val timestamp = System.currentTimeMillis()
                     val entities = domainModels.map { it.toEntity(timestamp) }
-                    lineStatusDao.insertAll(entities)
+                    tubeLineDao.insertAll(entities)
                 }
             }
         } catch (e: Exception) {
@@ -137,6 +137,6 @@ class LineStatusRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getLastUpdateTime(): Long? {
-        return lineStatusDao.getLastUpdateTime()
+        return tubeLineDao.getLastUpdateTime()
     }
 }

@@ -1,6 +1,6 @@
 package com.smartcommute.feature.linestatus.data.remote.mapper
 
-import com.smartcommute.feature.linestatus.data.local.entity.LineStatusEntity
+import com.smartcommute.feature.linestatus.data.local.entity.TubeLineEntity
 import com.smartcommute.feature.linestatus.data.remote.dto.LineStatusDto
 import com.smartcommute.feature.linestatus.data.remote.dto.LineStatusResponseDto
 import com.smartcommute.feature.linestatus.domain.model.ServiceStatus
@@ -35,15 +35,18 @@ fun LineStatusDto.toDomain(): UndergroundLine {
  * Converts domain model to database entity.
  * Includes timestamp parameter to track when the data was cached.
  */
-fun UndergroundLine.toEntity(timestamp: Long): LineStatusEntity {
-    return LineStatusEntity(
+fun UndergroundLine.toEntity(timestamp: Long): TubeLineEntity {
+    return TubeLineEntity(
         id = id,
         name = name,
         modeName = modeName,
         statusType = status.type.name,
         statusDescription = status.description,
         statusSeverity = status.severity,
-        lastUpdated = timestamp
+        brandColor = "#000000", // Default color, will be updated by Phase 6 integration
+        headerImageRes = "placeholder", // Will be set based on lineId in Phase 6
+        lastUpdated = timestamp,
+        cacheExpiry = timestamp + 600000L // 10 minutes cache
     )
 }
 
@@ -51,7 +54,7 @@ fun UndergroundLine.toEntity(timestamp: Long): LineStatusEntity {
  * Converts database entity back to domain model.
  * Falls back to SERVICE_DISRUPTION if the stored StatusType enum value is invalid.
  */
-fun LineStatusEntity.toDomain(): UndergroundLine {
+fun TubeLineEntity.toDomain(): UndergroundLine {
     val statusType = try {
         StatusType.valueOf(statusType)
     } catch (e: IllegalArgumentException) {
