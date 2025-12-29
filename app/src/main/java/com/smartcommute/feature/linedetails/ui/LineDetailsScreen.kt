@@ -1,29 +1,40 @@
 package com.smartcommute.feature.linedetails.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +59,8 @@ fun SharedTransitionScope.LineDetailsScreen(
     viewModel: LineDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val listState = rememberLazyListState()
 
     /**
      * Converts status type name to short user-friendly text
@@ -66,24 +79,64 @@ fun SharedTransitionScope.LineDetailsScreen(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
+            val density = LocalDensity.current
+            val fadeDistancePx = with(density) { 160.dp.toPx() }
+
+            val isCollapsed by remember {
+                derivedStateOf {
+                    listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > fadeDistancePx
+                }
+            }
+
+            val topBarContainerColor by animateColorAsState(
+                targetValue = if (isCollapsed) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.Transparent,
+                label = "topBarContainerColor"
+            )
+
+            val topBarContentColor by animateColorAsState(
+                targetValue = if (isCollapsed) MaterialTheme.colorScheme.onSurface else androidx.compose.ui.graphics.Color.White,
+                label = "topBarContentColor"
+            )
+
             TopAppBar(
-                title = { Text(stringResource(R.string.line_details_title)) },
+                title = {
+                    AnimatedVisibility(
+                        visible = isCollapsed,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        if (uiState is LineDetailsUiState.Success) {
+                            Text((uiState as LineDetailsUiState.Success).lineDetails.name)
+                        } else {
+                            Text(stringResource(R.string.line_details_title))
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_navigate_back)
+                            contentDescription = stringResource(R.string.cd_navigate_back),
+                            tint = topBarContentColor
                         )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = topBarContainerColor,
+                    scrolledContainerColor = topBarContainerColor,
+                    titleContentColor = topBarContentColor,
+                    navigationIconContentColor = topBarContentColor,
+                    actionIconContentColor = topBarContentColor
+                )
             )
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             when (val state = uiState) {
                 is LineDetailsUiState.Loading -> {
@@ -94,7 +147,9 @@ fun SharedTransitionScope.LineDetailsScreen(
                     val lineDetails = state.lineDetails
 
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         // Header with image, icon, name, and status with shared element transitions
@@ -115,91 +170,108 @@ fun SharedTransitionScope.LineDetailsScreen(
                                     else -> androidx.compose.ui.graphics.Color.Gray
                                 }
                             }
+
+                            // Calculate alpha based on scroll state
+                            val density = LocalDensity.current
+                            val fadeDistancePx = with(density) { 160.dp.toPx() }
+
+                            val contentAlpha by remember {
+                                derivedStateOf {
+                                    if (listState.firstVisibleItemIndex == 0) {
+                                        (1f - listState.firstVisibleItemScrollOffset / fadeDistancePx).coerceIn(0f, 1f)
+                                    } else {
+                                        0f
+                                    }
+                                }
+                            }
+
                             LineDetailsHeader(
                                 lineId = lineDetails.id,
                                 lineName = lineDetails.name,
                                 statusShortText = getShortStatusText(lineDetails.status.type.name),
                                 lineColor = lineColor,
-                                animatedVisibilityScope = animatedVisibilityScope
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                contentAlpha = contentAlpha,
+                                modifier = Modifier.padding(top = 0.dp) // Remove padding to let it go behind status bar if needed
                             )
                         }
 
-                    // Status Summary Card (with full description)
-                    item {
-                        StatusSummaryCard(
-                            status = lineDetails.status,
-                            lastUpdated = lineDetails.lastUpdated,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-
-                    // Disruptions Section
-                    if (lineDetails.disruptions.isNotEmpty()) {
-                        items(lineDetails.disruptions) { disruption ->
-                            DisruptionCard(
-                                disruption = disruption,
-                                isExpanded = state.expandedDisruptions.contains(disruption.id),
-                                onToggleExpand = { viewModel.toggleDisruptionExpansion(disruption.id) },
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-                    } else {
+                        // Status Summary Card (with full description)
                         item {
-                            EmptyStateCard(
-                                message = stringResource(R.string.empty_state_no_disruptions),
+                            StatusSummaryCard(
+                                status = lineDetails.status,
+                                lastUpdated = lineDetails.lastUpdated,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                         }
-                    }
 
-                    // Closures Section
-                    if (lineDetails.closures.isNotEmpty()) {
-                        items(lineDetails.closures) { closure ->
-                            ClosureCard(
-                                closure = closure,
-                                isExpanded = state.expandedClosures.contains(closure.id),
-                                onToggleExpand = { viewModel.toggleClosureExpansion(closure.id) },
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-                    } else {
-                        item {
-                            EmptyStateCard(
-                                message = stringResource(R.string.empty_state_no_closures),
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-                    }
-
-                    // Crowding Section
-                    item {
-                        if (lineDetails.crowding != null) {
-                            CrowdingCard(
-                                crowding = lineDetails.crowding,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                        // Disruptions Section
+                        if (lineDetails.disruptions.isNotEmpty()) {
+                            items(lineDetails.disruptions) { disruption ->
+                                DisruptionCard(
+                                    disruption = disruption,
+                                    isExpanded = state.expandedDisruptions.contains(disruption.id),
+                                    onToggleExpand = { viewModel.toggleDisruptionExpansion(disruption.id) },
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
                         } else {
-                            EmptyStateCard(
-                                message = stringResource(R.string.empty_state_no_crowding),
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                            item {
+                                EmptyStateCard(
+                                    message = stringResource(R.string.empty_state_no_disruptions),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
                         }
-                    }
 
-                    // Bottom spacing
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        // Closures Section
+                        if (lineDetails.closures.isNotEmpty()) {
+                            items(lineDetails.closures) { closure ->
+                                ClosureCard(
+                                    closure = closure,
+                                    isExpanded = state.expandedClosures.contains(closure.id),
+                                    onToggleExpand = { viewModel.toggleClosureExpansion(closure.id) },
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                        } else {
+                            item {
+                                EmptyStateCard(
+                                    message = stringResource(R.string.empty_state_no_closures),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                        }
+
+                        // Crowding Section
+                        item {
+                            if (lineDetails.crowding != null) {
+                                CrowdingCard(
+                                    crowding = lineDetails.crowding,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            } else {
+                                EmptyStateCard(
+                                    message = stringResource(R.string.empty_state_no_crowding),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                        }
+
+                        // Bottom spacing
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
                     }
                 }
-            }
 
-            is LineDetailsUiState.Error -> {
-                ErrorState(
-                    message = state.message,
-                    onRetry = { viewModel.retry() }
-                )
+                is LineDetailsUiState.Error -> {
+                    ErrorState(
+                        message = state.message,
+                        onRetry = { viewModel.retry() }
+                    )
+                }
             }
         }
     }
-}
 }

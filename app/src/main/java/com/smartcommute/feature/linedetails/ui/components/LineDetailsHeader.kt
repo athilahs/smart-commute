@@ -37,7 +37,8 @@ fun SharedTransitionScope.LineDetailsHeader(
     statusShortText: String,
     lineColor: Color,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentAlpha: Float = 1f
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxWidth()
@@ -89,6 +90,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                         .align(Alignment.BottomStart)
                         .padding(16.dp)
                         .padding(bottom = iconOffset)
+                        .alpha(contentAlpha)
                 ) {
                     Text(
                         text = lineName,
@@ -119,6 +121,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                     .padding(end = 16.dp)
                     .padding(bottom = iconOffset / 2)
                     .size(iconSize)
+                    .alpha(contentAlpha)
                     .clip(CircleShape)
                     .background(lineColor.copy(alpha = 0.15f))
                     .sharedElement(
@@ -183,4 +186,3 @@ private fun getLineGradient(lineId: String): Brush {
         )
     }
 }
-
