@@ -1,5 +1,8 @@
 package com.smartcommute.feature.linestatus.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import com.smartcommute.R
 import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun LineStatusItem(
+fun SharedTransitionScope.LineStatusItem(
     line: UndergroundLine,
     lineColor: Color,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -53,12 +58,16 @@ fun LineStatusItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // TfL roundel icon with line color
+            // TfL roundel icon with line color - shared element
             Box(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(CircleShape)
-                    .background(lineColor.copy(alpha = 0.15f)),
+                    .background(lineColor.copy(alpha = 0.15f))
+                    .sharedElement(
+                        rememberSharedContentState(key = "line_icon_${line.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -71,20 +80,28 @@ fun LineStatusItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Line name and status
+            // Line name and status - shared elements
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = line.name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.sharedElement(
+                        rememberSharedContentState(key = "line_name_${line.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = statusText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.sharedElement(
+                        rememberSharedContentState(key = "line_status_${line.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 )
             }
 

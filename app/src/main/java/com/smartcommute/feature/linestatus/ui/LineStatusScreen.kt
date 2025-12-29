@@ -1,5 +1,8 @@
 package com.smartcommute.feature.linestatus.ui
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,10 +29,11 @@ import com.smartcommute.feature.linestatus.ui.components.LoadingStateOverlay
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun LineStatusScreen(
+fun SharedTransitionScope.LineStatusScreen(
     onLineClick: (String) -> Unit = {},
+    animatedVisibilityScope: AnimatedVisibilityScope,
     @Suppress("DEPRECATION")
     viewModel: LineStatusViewModel = hiltViewModel()
 ) {
@@ -78,6 +82,7 @@ fun LineStatusScreen(
                             }
                             LineStatusList(
                                 lines = state.lines,
+                                animatedVisibilityScope = animatedVisibilityScope,
                                 onLineClick = onLineClick
                             )
                         }
@@ -101,6 +106,7 @@ fun LineStatusScreen(
                                 }
                                 LineStatusList(
                                     lines = state.cachedLines,
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                     onLineClick = onLineClick
                                 )
                             }
@@ -153,9 +159,11 @@ private fun LastUpdatedText(timestamp: Long) {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun LineStatusList(
+private fun SharedTransitionScope.LineStatusList(
     lines: List<UndergroundLine>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onLineClick: (String) -> Unit
 ) {
     LazyColumn(
@@ -168,6 +176,7 @@ private fun LineStatusList(
             LineStatusItem(
                 line = line,
                 lineColor = lineColor,
+                animatedVisibilityScope = animatedVisibilityScope,
                 onClick = { onLineClick(line.id) }
             )
         }

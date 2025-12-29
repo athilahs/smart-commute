@@ -129,12 +129,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T053 [P] [US3] Add sharedElement modifier to line icon in LineDetailsHeader with unique key based on lineId
-- [ ] T054 [P] [US3] Add sharedElement modifier to line name Text in LineDetailsHeader with unique key
-- [ ] T055 [P] [US3] Add sharedElement modifier to status Text in LineDetailsHeader with unique key
-- [ ] T056 [US3] Update LineStatusItem to add matching sharedElement modifiers with same keys in app/src/main/java/com/smartcommute/feature/linestatus/ui/components/LineStatusItem.kt
-- [ ] T057 [US3] Wrap navigation in SharedTransitionLayout in AppNavigation
-- [ ] T058 [US3] Configure shared element transition duration to <400ms per SC-002 requirement
+- [x] T053 [P] [US3] Add sharedElement modifier to line icon in LineDetailsHeader with unique key based on lineId
+- [x] T054 [P] [US3] Add sharedElement modifier to line name Text in LineDetailsHeader with unique key
+- [x] T055 [P] [US3] Add sharedElement modifier to status Text in LineDetailsHeader with unique key
+- [x] T056 [US3] Update LineStatusItem to add matching sharedElement modifiers with same keys in app/src/main/java/com/smartcommute/feature/linestatus/ui/components/LineStatusItem.kt
+- [x] T057 [US3] Wrap navigation in SharedTransitionLayout in AppNavigation
+- [x] T058 [US3] Configure shared element transition duration to <400ms per SC-002 requirement
 - [ ] T059 [US3] Test and verify smooth animations at 60fps with Android Profiler
 - [ ] T060 [US3] Verify shared elements animate back to original positions when pressing back button
 
@@ -184,8 +184,8 @@
 - [ ] T083 Verify TalkBack accessibility support for content descriptions
 - [ ] T084 Test dark mode to ensure theme applies correctly
 - [ ] T085 Run complete manual test checklist from quickstart.md
-- [ ] T086 [P] Code cleanup: Remove unused imports and TODOs
-- [ ] T087 [P] Verify all string literals are in strings.xml (no hardcoded text)
+- [x] T086 [P] Code cleanup: Remove unused imports and TODOs
+- [x] T087 [P] Verify all string literals are in strings.xml (no hardcoded text)
 - [ ] T088 Final build and APK size verification (<2MB increase for images)
 - [x] T089 Adjust line icon positioning to be centered between image and details section (not over image) in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LineDetailsHeader.kt
 - [x] T090 Implement collapsible top bar with scroll behavior: collapse image on scroll up, show line title in top bar, hide icon, show status as subtitle in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
