@@ -50,7 +50,11 @@ fun SharedTransitionScope.LineStatusScreen(
                             contentDescription = stringResource(R.string.cd_refresh_status)
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                ),
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     ) { paddingValues ->

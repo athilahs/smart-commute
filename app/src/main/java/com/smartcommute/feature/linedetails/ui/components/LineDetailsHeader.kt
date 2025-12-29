@@ -7,10 +7,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +25,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +44,9 @@ fun SharedTransitionScope.LineDetailsHeader(
     modifier: Modifier = Modifier,
     contentAlpha: Float = 1f
 ) {
+    val density = LocalDensity.current
+    val statusBarHeight = WindowInsets.statusBars.getTop(density)
+
     BoxWithConstraints(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -50,20 +57,20 @@ fun SharedTransitionScope.LineDetailsHeader(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(headerHeight + iconOffset)
+                .height(headerHeight + iconOffset + with(density) { statusBarHeight.toDp() })
         ) {
-            // Header image container
+            // Header image container - extends behind status bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(headerHeight)
+                    .height(headerHeight + with(density) { statusBarHeight.toDp() })
             ) {
                 // Header background - using Box with gradient brush for better rendering
                 val gradient = getLineGradient(lineId)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(headerHeight)
+                        .height(headerHeight + with(density) { statusBarHeight.toDp() })
                         .background(gradient)
                 )
 
@@ -71,7 +78,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(headerHeight)
+                        .height(headerHeight + with(density) { statusBarHeight.toDp() })
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(

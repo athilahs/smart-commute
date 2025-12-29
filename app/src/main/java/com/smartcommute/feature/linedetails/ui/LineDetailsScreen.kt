@@ -8,12 +8,16 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -80,78 +84,29 @@ fun SharedTransitionScope.LineDetailsScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            val density = LocalDensity.current
-            val fadeDistancePx = with(density) { 160.dp.toPx() }
-
-            val isCollapsed by remember {
-                derivedStateOf {
-                    listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > fadeDistancePx
-                }
-            }
-
-            val topBarContainerColor by animateColorAsState(
-                targetValue = if (isCollapsed) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.Transparent,
-                label = "topBarContainerColor"
-            )
-
-            val topBarContentColor by animateColorAsState(
-                targetValue = if (isCollapsed) MaterialTheme.colorScheme.onSurface else androidx.compose.ui.graphics.Color.White,
-                label = "topBarContentColor"
-            )
-
-            TopAppBar(
-                title = {
-                    AnimatedVisibility(
-                        visible = isCollapsed,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        if (uiState is LineDetailsUiState.Success) {
-                            Text((uiState as LineDetailsUiState.Success).lineDetails.name)
-                        } else {
-                            Text(stringResource(R.string.line_details_title))
-                        }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_navigate_back),
-                            tint = topBarContentColor
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = topBarContainerColor,
-                    scrolledContainerColor = topBarContainerColor,
-                    titleContentColor = topBarContentColor,
-                    navigationIconContentColor = topBarContentColor,
-                    actionIconContentColor = topBarContentColor
-                )
-            )
-        }
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            when (val state = uiState) {
-                is LineDetailsUiState.Loading -> {
-                    LoadingState()
-                }
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Content layer - draws from absolute top
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                when (val state = uiState) {
+                    is LineDetailsUiState.Loading -> {
+                        LoadingState()
+                    }
 
-                is LineDetailsUiState.Success -> {
-                    val lineDetails = state.lineDetails
+                    is LineDetailsUiState.Success -> {
+                        val lineDetails = state.lineDetails
 
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                         // Header with image, icon, name, and status with shared element transitions
                         item {
                             val lineColor = remember(lineDetails.id) {
@@ -272,6 +227,61 @@ fun SharedTransitionScope.LineDetailsScreen(
                     )
                 }
             }
+        }
+
+        // TopAppBar overlay - floats on top of content
+        val density = LocalDensity.current
+        val fadeDistancePx = with(density) { 160.dp.toPx() }
+
+        val isCollapsed by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > fadeDistancePx
+            }
+        }
+
+        val topBarContainerColor by animateColorAsState(
+            targetValue = if (isCollapsed) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.Transparent,
+            label = "topBarContainerColor"
+        )
+
+        val topBarContentColor by animateColorAsState(
+            targetValue = if (isCollapsed) MaterialTheme.colorScheme.onSurface else androidx.compose.ui.graphics.Color.White,
+            label = "topBarContentColor"
+        )
+
+        TopAppBar(
+            title = {
+                AnimatedVisibility(
+                    visible = isCollapsed,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    if (uiState is LineDetailsUiState.Success) {
+                        Text((uiState as LineDetailsUiState.Success).lineDetails.name)
+                    } else {
+                        Text(stringResource(R.string.line_details_title))
+                    }
+                }
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.cd_navigate_back),
+                        tint = topBarContentColor
+                    )
+                }
+            },
+            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = topBarContainerColor,
+                scrolledContainerColor = topBarContainerColor,
+                titleContentColor = topBarContentColor,
+                navigationIconContentColor = topBarContentColor,
+                actionIconContentColor = topBarContentColor
+            ),
+            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+        )
         }
     }
 }
