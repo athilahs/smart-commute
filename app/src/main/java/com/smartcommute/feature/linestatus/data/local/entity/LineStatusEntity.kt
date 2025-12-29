@@ -13,7 +13,6 @@ data class TubeLineEntity(
     val statusDescription: String,
     val statusSeverity: Int,
     val brandColor: String = "#000000",
-    val headerImageRes: String = "placeholder",
     val lastUpdated: Long,
     val cacheExpiry: Long = lastUpdated + 600000L // 10 minutes default
 )

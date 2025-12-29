@@ -81,7 +81,7 @@
 - [x] T028 [P] [US1] Create ErrorState composable with back button in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/ErrorState.kt
 - [x] T029 [US1] Create LineDetailsScreen main composable with Scaffold and TopAppBar in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
 - [x] T030 [US1] Update LineStatusScreen to add onLineClick navigation parameter in app/src/main/java/com/smartcommute/feature/linestatus/ui/LineStatusScreen.kt
-- [ ] T031 [P] [US1] Generate and add 11 high-resolution station header images (1440x960px WebP, anonymized crowds) to app/src/main/res/drawable-nodpi/
+- [x] T031 [P] [US1] Generate and add 11 high-resolution station header images (1440x960px WebP, anonymized crowds) to app/src/main/res/drawable-nodpi/
 - [x] T032 [P] [US1] Add string resources for line details screen in app/src/main/res/values/strings.xml
 - [x] T033 [US1] Implement BoxWithConstraints for responsive 1/3 height image calculation in LineDetailsHeader
 - [x] T034 [US1] Add dark gradient scrim overlay to header image for text readability using Brush.verticalGradient from Color.Transparent to Color.Black with 0.7f alpha (per FR-004 and SC-004 contrast requirement)
@@ -135,8 +135,8 @@
 - [x] T056 [US3] Update LineStatusItem to add matching sharedElement modifiers with same keys in app/src/main/java/com/smartcommute/feature/linestatus/ui/components/LineStatusItem.kt
 - [x] T057 [US3] Wrap navigation in SharedTransitionLayout in AppNavigation
 - [x] T058 [US3] Configure shared element transition duration to <400ms per SC-002 requirement
-- [ ] T059 [US3] Test and verify smooth animations at 60fps with Android Profiler
-- [ ] T060 [US3] Verify shared elements animate back to original positions when pressing back button
+- [x] T059 [US3] Test and verify smooth animations at 60fps with Android Profiler
+- [x] T060 [US3] Verify shared elements animate back to original positions when pressing back button
 
 **Checkpoint**: All user stories should now be independently functional with polished shared element transitions completing the feature.
 
@@ -169,24 +169,24 @@
 
 **Purpose**: Final improvements, edge case handling, and manual verification
 
-- [ ] T071 [P] Verify text contrast ratio ≥4.5:1 on header image with gradient scrim per SC-004
-- [ ] T072 [P] Test screen load time <2 seconds per SC-001 with Android Profiler
-- [ ] T073 [P] Test shared element animations complete in <400ms per SC-002
-- [ ] T074 [P] Verify images display without pixelation on 3x density devices per SC-003
-- [ ] T075 Test device rotation to verify state preservation in ViewModel
-- [ ] T076 Test with missing crowding data to verify EmptyStateCard displays
-- [ ] T077 Test with no disruptions to verify EmptyStateCard displays
-- [ ] T078 Test with very long disruption text to verify "Read more" expansion works
-- [ ] T079 Test with lineId not in database to verify error state displays
-- [ ] T080 Test back navigation returns to tube status screen with reverse animations
-- [ ] T081 Verify no ANR during database queries (queries run on IO dispatcher)
-- [ ] T082 Test on multiple screen sizes and aspect ratios for responsive layout
-- [ ] T083 Verify TalkBack accessibility support for content descriptions
-- [ ] T084 Test dark mode to ensure theme applies correctly
-- [ ] T085 Run complete manual test checklist from quickstart.md
+- [x] T071 [P] Verify text contrast ratio ≥4.5:1 on header image with gradient scrim per SC-004
+- [x] T072 [P] Test screen load time <2 seconds per SC-001 with Android Profiler
+- [x] T073 [P] Test shared element animations complete in <400ms per SC-002
+- [x] T074 [P] Verify images display without pixelation on 3x density devices per SC-003
+- [x] T075 Test device rotation to verify state preservation in ViewModel
+- [x] T076 Test with missing crowding data to verify EmptyStateCard displays
+- [x] T077 Test with no disruptions to verify EmptyStateCard displays
+- [x] T078 Test with very long disruption text to verify "Read more" expansion works
+- [x] T079 Test with lineId not in database to verify error state displays
+- [x] T080 Test back navigation returns to tube status screen with reverse animations
+- [x] T081 Verify no ANR during database queries (queries run on IO dispatcher)
+- [x] T082 Test on multiple screen sizes and aspect ratios for responsive layout
+- [x] T083 Verify TalkBack accessibility support for content descriptions
+- [x] T084 Test dark mode to ensure theme applies correctly
+- [x] T085 Run complete manual test checklist from quickstart.md
 - [x] T086 [P] Code cleanup: Remove unused imports and TODOs
 - [x] T087 [P] Verify all string literals are in strings.xml (no hardcoded text)
-- [ ] T088 Final build and APK size verification (<2MB increase for images)
+- [x] T088 Final build and APK size verification (<2MB increase for images)
 - [x] T089 Adjust line icon positioning to be centered between image and details section (not over image) in app/src/main/java/com/smartcommute/feature/linedetails/ui/components/LineDetailsHeader.kt
 - [x] T090 Implement collapsible top bar with scroll behavior: collapse image on scroll up, show line title in top bar, hide icon, show status as subtitle in app/src/main/java/com/smartcommute/feature/linedetails/ui/LineDetailsScreen.kt
 - [x] T091 Update hero section status text to show short version only (e.g., "Good Service") and move long description to StatusSummaryCard in details section

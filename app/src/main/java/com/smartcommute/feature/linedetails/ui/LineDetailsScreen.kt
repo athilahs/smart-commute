@@ -120,7 +120,6 @@ fun SharedTransitionScope.LineDetailsScreen(
                                 lineName = lineDetails.name,
                                 statusShortText = getShortStatusText(lineDetails.status.type.name),
                                 lineColor = lineColor,
-                                headerImageRes = lineDetails.headerImageRes,
                                 animatedVisibilityScope = animatedVisibilityScope
                             )
                         }

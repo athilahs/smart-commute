@@ -22,24 +22,20 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.smartcommute.R
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.LineDetailsHeader(
     lineId: String,
     lineName: String,
     statusShortText: String,
     lineColor: Color,
-    headerImageRes: String,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier
 ) {
@@ -61,17 +57,14 @@ fun SharedTransitionScope.LineDetailsHeader(
                     .fillMaxWidth()
                     .height(headerHeight)
             ) {
-                // Header image
-                val imageResId = getHeaderImageResourceId(headerImageRes)
-                GlideImage(
-                    model = imageResId,
-                    contentDescription = stringResource(R.string.format_station_image_desc, lineName),
-                    modifier = Modifier.fillMaxWidth().height(headerHeight),
-                    contentScale = ContentScale.Crop
-                ) {
-                    it.error(android.R.drawable.ic_menu_gallery)
-                        .placeholder(android.R.drawable.ic_menu_gallery)
-                }
+                // Header background - using Box with gradient brush for better rendering
+                val gradient = getLineGradient(lineId)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(headerHeight)
+                        .background(gradient)
+                )
 
                 // Dark gradient scrim for text readability
                 Box(
@@ -147,8 +140,47 @@ fun SharedTransitionScope.LineDetailsHeader(
 }
 
 @Composable
-private fun getHeaderImageResourceId(headerImageRes: String): Int {
-    // Map resource names to drawable IDs
-    // For now, return placeholder - actual images will be added in T031
-    return android.R.drawable.ic_menu_gallery
+private fun getLineGradient(lineId: String): Brush {
+    // Normalize the line ID
+    val normalizedId = lineId.lowercase().replace("-", "").replace(" ", "")
+
+    return when (normalizedId) {
+        "bakerloo" -> Brush.linearGradient(
+            colors = listOf(Color(0xFFB36305), Color(0xFF8B4E04), Color(0xFFB36305))
+        )
+        "central" -> Brush.linearGradient(
+            colors = listOf(Color(0xFFDC241F), Color(0xFFB01C18), Color(0xFFDC241F))
+        )
+        "circle" -> Brush.linearGradient(
+            colors = listOf(Color(0xFFFFD329), Color(0xFFE6BE24), Color(0xFFFFD329))
+        )
+        "district" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF007D32), Color(0xFF006428), Color(0xFF007D32))
+        )
+        "hammersmithcity", "hammersmith&city" -> Brush.linearGradient(
+            colors = listOf(Color(0xFFF491A8), Color(0xFFE17A91), Color(0xFFF491A8))
+        )
+        "jubilee" -> Brush.linearGradient(
+            colors = listOf(Color(0xFFA1A5A7), Color(0xFF8A8E90), Color(0xFFA1A5A7))
+        )
+        "metropolitan" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF9B0058), Color(0xFF7A0046), Color(0xFF9B0058))
+        )
+        "northern" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF000000), Color(0xFF1A1A1A), Color(0xFF000000))
+        )
+        "piccadilly" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF0019A8), Color(0xFF001486), Color(0xFF0019A8))
+        )
+        "victoria" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF0098D8), Color(0xFF007AAD), Color(0xFF0098D8))
+        )
+        "waterloocity", "waterloo&city" -> Brush.linearGradient(
+            colors = listOf(Color(0xFF93CEBA), Color(0xFF7AB9A6), Color(0xFF93CEBA))
+        )
+        else -> Brush.linearGradient(
+            colors = listOf(Color(0xFF808080), Color(0xFF606060), Color(0xFF808080))
+        )
+    }
 }
+

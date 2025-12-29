@@ -30,7 +30,6 @@ object DatabaseModule {
                     statusDescription TEXT NOT NULL,
                     statusSeverity INTEGER NOT NULL,
                     brandColor TEXT NOT NULL DEFAULT '#000000',
-                    headerImageRes TEXT NOT NULL DEFAULT 'placeholder',
                     lastUpdated INTEGER NOT NULL,
                     cacheExpiry INTEGER NOT NULL DEFAULT 0
                 )

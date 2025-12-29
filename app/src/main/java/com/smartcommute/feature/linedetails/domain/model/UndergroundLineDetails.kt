@@ -8,7 +8,6 @@ data class UndergroundLineDetails(
     val modeName: String,
     val status: ServiceStatus,
     val brandColor: String,
-    val headerImageRes: String,
     val lastUpdated: Long,
     val disruptions: List<Disruption>,
     val closures: List<Closure>,

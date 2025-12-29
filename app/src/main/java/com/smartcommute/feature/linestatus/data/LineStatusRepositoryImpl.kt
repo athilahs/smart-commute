@@ -131,9 +131,7 @@ class LineStatusRepositoryImpl @Inject constructor(
                     // Cache basic line information
                     val domainModels = data.map { it.toDomain() }
                     val entities = domainModels.map { dto ->
-                        dto.toEntity(timestamp).copy(
-                            headerImageRes = getHeaderImageResForLine(dto.id)
-                        )
+                        dto.toEntity(timestamp)
                     }
                     tubeLineDao.insertAll(entities)
 
@@ -147,13 +145,6 @@ class LineStatusRepositoryImpl @Inject constructor(
             // Silently fail on refresh - UI will continue showing cached data
             // ViewModel will handle showing error banners if needed
         }
-    }
-
-    /**
-     * Maps line ID to header image resource name.
-     */
-    private fun getHeaderImageResForLine(lineId: String): String {
-        return "line_header_${lineId.lowercase().replace(" ", "_")}"
     }
 
     /**

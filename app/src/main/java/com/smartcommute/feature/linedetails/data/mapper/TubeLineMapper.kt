@@ -32,7 +32,6 @@ fun TubeLineEntity.toBasicDomain(): UndergroundLineDetails {
             severity = statusSeverity
         ),
         brandColor = brandColor,
-        headerImageRes = headerImageRes,
         lastUpdated = lastUpdated,
         disruptions = emptyList(),
         closures = emptyList(),
@@ -64,7 +63,6 @@ fun TubeLineEntity.toDetailedDomain(
             severity = statusSeverity
         ),
         brandColor = brandColor,
-        headerImageRes = headerImageRes,
         lastUpdated = lastUpdated,
         disruptions = disruptions.map { it.toDomain() },
         closures = closures.map { it.toDomain() },

@@ -43,8 +43,7 @@ fun UndergroundLine.toEntity(timestamp: Long): TubeLineEntity {
         statusType = status.type.name,
         statusDescription = status.description,
         statusSeverity = status.severity,
-        brandColor = "#000000", // Default color, will be updated by Phase 6 integration
-        headerImageRes = "placeholder", // Will be set based on lineId in Phase 6
+        brandColor = "#000000", // Default color, will be updated by UI layer
         lastUpdated = timestamp,
         cacheExpiry = timestamp + 600000L // 10 minutes cache
     )
