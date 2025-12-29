@@ -5,8 +5,10 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,9 +36,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -53,6 +59,7 @@ import com.smartcommute.feature.linedetails.ui.components.ErrorState
 import com.smartcommute.feature.linedetails.ui.components.LineDetailsHeader
 import com.smartcommute.feature.linedetails.ui.components.LoadingState
 import com.smartcommute.feature.linedetails.ui.components.StatusSummaryCard
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -100,6 +107,18 @@ fun SharedTransitionScope.LineDetailsScreen(
 
                     is LineDetailsUiState.Success -> {
                         val lineDetails = state.lineDetails
+
+                        // Track which items should be visible for staggered animation
+                        var itemsVisible by remember { mutableStateOf(0) }
+
+                        // Start showing items after shared transition completes (600ms delay)
+                        LaunchedEffect(Unit) {
+                            delay(600) // Wait for shared transitions
+                            repeat(20) { // Enough for all possible items
+                                delay(150) // Stagger delay between items (150ms for clear sequential effect)
+                                itemsVisible++
+                            }
+                        }
 
                         LazyColumn(
                             state = listState,
@@ -153,63 +172,119 @@ fun SharedTransitionScope.LineDetailsScreen(
 
                         // Status Summary Card (with full description)
                         item {
-                            StatusSummaryCard(
-                                status = lineDetails.status,
-                                lastUpdated = lineDetails.lastUpdated,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                            AnimatedVisibility(
+                                visible = itemsVisible >= 1,
+                                enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                        slideInVertically(
+                                            animationSpec = tween(durationMillis = 400),
+                                            initialOffsetY = { it / 3 }
+                                        )
+                            ) {
+                                StatusSummaryCard(
+                                    status = lineDetails.status,
+                                    lastUpdated = lineDetails.lastUpdated,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
                         }
 
                         // Disruptions Section
                         if (lineDetails.disruptions.isNotEmpty()) {
-                            items(lineDetails.disruptions) { disruption ->
-                                DisruptionCard(
-                                    disruption = disruption,
-                                    isExpanded = state.expandedDisruptions.contains(disruption.id),
-                                    onToggleExpand = { viewModel.toggleDisruptionExpansion(disruption.id) },
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                            itemsIndexed(lineDetails.disruptions) { index, disruption ->
+                                AnimatedVisibility(
+                                    visible = itemsVisible >= (2 + index),
+                                    enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                            slideInVertically(
+                                                animationSpec = tween(durationMillis = 400),
+                                                initialOffsetY = { it / 3 }
+                                            )
+                                ) {
+                                    DisruptionCard(
+                                        disruption = disruption,
+                                        isExpanded = state.expandedDisruptions.contains(disruption.id),
+                                        onToggleExpand = { viewModel.toggleDisruptionExpansion(disruption.id) },
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         } else {
                             item {
-                                EmptyStateCard(
-                                    message = stringResource(R.string.empty_state_no_disruptions),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                AnimatedVisibility(
+                                    visible = itemsVisible >= 2,
+                                    enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                            slideInVertically(
+                                                animationSpec = tween(durationMillis = 400),
+                                                initialOffsetY = { it / 3 }
+                                            )
+                                ) {
+                                    EmptyStateCard(
+                                        message = stringResource(R.string.empty_state_no_disruptions),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         }
 
                         // Closures Section
+                        val closuresStartIndex = 2 + lineDetails.disruptions.size
                         if (lineDetails.closures.isNotEmpty()) {
-                            items(lineDetails.closures) { closure ->
-                                ClosureCard(
-                                    closure = closure,
-                                    isExpanded = state.expandedClosures.contains(closure.id),
-                                    onToggleExpand = { viewModel.toggleClosureExpansion(closure.id) },
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                            itemsIndexed(lineDetails.closures) { index, closure ->
+                                AnimatedVisibility(
+                                    visible = itemsVisible >= (closuresStartIndex + index),
+                                    enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                            slideInVertically(
+                                                animationSpec = tween(durationMillis = 400),
+                                                initialOffsetY = { it / 3 }
+                                            )
+                                ) {
+                                    ClosureCard(
+                                        closure = closure,
+                                        isExpanded = state.expandedClosures.contains(closure.id),
+                                        onToggleExpand = { viewModel.toggleClosureExpansion(closure.id) },
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         } else {
                             item {
-                                EmptyStateCard(
-                                    message = stringResource(R.string.empty_state_no_closures),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                                AnimatedVisibility(
+                                    visible = itemsVisible >= closuresStartIndex,
+                                    enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                            slideInVertically(
+                                                animationSpec = tween(durationMillis = 400),
+                                                initialOffsetY = { it / 3 }
+                                            )
+                                ) {
+                                    EmptyStateCard(
+                                        message = stringResource(R.string.empty_state_no_closures),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         }
 
                         // Crowding Section
+                        val crowdingIndex = closuresStartIndex + lineDetails.closures.size
                         item {
-                            if (lineDetails.crowding != null) {
-                                CrowdingCard(
-                                    crowding = lineDetails.crowding,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
-                            } else {
-                                EmptyStateCard(
-                                    message = stringResource(R.string.empty_state_no_crowding),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
+                            AnimatedVisibility(
+                                visible = itemsVisible >= crowdingIndex,
+                                enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                        slideInVertically(
+                                            animationSpec = tween(durationMillis = 400),
+                                            initialOffsetY = { it / 3 }
+                                        )
+                            ) {
+                                if (lineDetails.crowding != null) {
+                                    CrowdingCard(
+                                        crowding = lineDetails.crowding,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                } else {
+                                    EmptyStateCard(
+                                        message = stringResource(R.string.empty_state_no_crowding),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         }
 

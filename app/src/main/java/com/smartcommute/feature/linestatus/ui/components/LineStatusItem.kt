@@ -3,6 +3,8 @@ package com.smartcommute.feature.linestatus.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -66,7 +68,13 @@ fun SharedTransitionScope.LineStatusItem(
                     .background(lineColor.copy(alpha = 0.15f))
                     .sharedElement(
                         rememberSharedContentState(key = "line_icon_${line.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        }
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -90,7 +98,13 @@ fun SharedTransitionScope.LineStatusItem(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.sharedElement(
                         rememberSharedContentState(key = "line_name_${line.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        }
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -100,7 +114,13 @@ fun SharedTransitionScope.LineStatusItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.sharedElement(
                         rememberSharedContentState(key = "line_status_${line.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        }
                     )
                 )
             }

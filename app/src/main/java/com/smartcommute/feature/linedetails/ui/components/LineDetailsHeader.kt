@@ -3,6 +3,8 @@ package com.smartcommute.feature.linedetails.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -106,7 +108,13 @@ fun SharedTransitionScope.LineDetailsHeader(
                         color = Color.White,
                         modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "line_name_$lineId"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                tween(
+                                    durationMillis = 500,
+                                    easing = FastOutSlowInEasing
+                                )
+                            }
                         )
                     )
                     Text(
@@ -115,7 +123,13 @@ fun SharedTransitionScope.LineDetailsHeader(
                         color = Color.White,
                         modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "line_status_$lineId"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                tween(
+                                    durationMillis = 500,
+                                    easing = FastOutSlowInEasing
+                                )
+                            }
                         )
                     )
                 }
@@ -133,7 +147,13 @@ fun SharedTransitionScope.LineDetailsHeader(
                     .background(lineColor.copy(alpha = 0.15f))
                     .sharedElement(
                         rememberSharedContentState(key = "line_icon_$lineId"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        }
                     )
                     .zIndex(10f),
                 contentAlignment = Alignment.Center
