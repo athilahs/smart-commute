@@ -1,6 +1,7 @@
 package com.smartcommute.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -25,6 +26,7 @@ fun MainScreen() {
     val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
@@ -67,7 +69,7 @@ fun MainScreen() {
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())) {
             AppNavigation(
                 navController = navController
             )

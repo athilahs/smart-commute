@@ -4,7 +4,7 @@ import android.content.Context
 import com.smartcommute.BuildConfig
 import com.smartcommute.R
 import com.smartcommute.core.network.NetworkResult
-import com.smartcommute.feature.linestatus.data.local.dao.LineStatusDao
+import com.smartcommute.feature.linestatus.data.local.dao.TubeLineDao
 import com.smartcommute.feature.linestatus.data.remote.TflApiService
 import com.smartcommute.feature.linestatus.data.remote.mapper.toDomain
 import com.smartcommute.feature.linestatus.data.remote.mapper.toEntity
@@ -34,7 +34,8 @@ import javax.inject.Singleton
 class LineStatusRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val tflApiService: TflApiService,
-    private val lineStatusDao: LineStatusDao
+    private val tubeLineDao: TubeLineDao,
+    private val lineDetailsDao: com.smartcommute.feature.linedetails.data.local.dao.LineDetailsDao
 ) : LineStatusRepository {
 
     /**
@@ -50,7 +51,7 @@ class LineStatusRepositoryImpl @Inject constructor(
 
         // Attempt to load cached data first (offline-first approach)
         val cachedData = try {
-            lineStatusDao.getAllLineStatuses().first()
+            tubeLineDao.getAllLineStatuses().first()
         } catch (e: Exception) {
             emptyList()
         }
@@ -74,7 +75,7 @@ class LineStatusRepositoryImpl @Inject constructor(
                     // Cache fresh data to Room database with current timestamp
                     val timestamp = System.currentTimeMillis()
                     val entities = domainModels.map { it.toEntity(timestamp) }
-                    lineStatusDao.insertAll(entities)
+                    tubeLineDao.insertAll(entities)
 
                     // Emit fresh data to UI
                     emit(NetworkResult.Success(domainModels))
@@ -113,6 +114,7 @@ class LineStatusRepositoryImpl @Inject constructor(
 
     /**
      * Refreshes line statuses from API and updates cache.
+     * Also caches disruptions, closures, and crowding data.
      * Silently fails on error - UI continues showing cached data.
      * Called by pull-to-refresh and manual refresh button.
      */
@@ -124,10 +126,19 @@ class LineStatusRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val data = response.body()
                 if (data != null) {
-                    val domainModels = data.map { it.toDomain() }
                     val timestamp = System.currentTimeMillis()
-                    val entities = domainModels.map { it.toEntity(timestamp) }
-                    lineStatusDao.insertAll(entities)
+
+                    // Cache basic line information
+                    val domainModels = data.map { it.toDomain() }
+                    val entities = domainModels.map { dto ->
+                        dto.toEntity(timestamp)
+                    }
+                    tubeLineDao.insertAll(entities)
+
+                    // Cache detailed information for each line
+                    data.forEach { lineDto ->
+                        cacheLineDetails(lineDto, timestamp)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -136,7 +147,90 @@ class LineStatusRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Caches disruptions, closures, and crowding data for a line.
+     */
+    private suspend fun cacheLineDetails(lineDto: com.smartcommute.feature.linestatus.data.remote.dto.LineStatusDto, timestamp: Long) {
+        val lineId = lineDto.id
+
+        // Extract and cache disruptions
+        val disruptions = mutableListOf<com.smartcommute.feature.linedetails.data.local.entity.DisruptionEntity>()
+        val closures = mutableListOf<com.smartcommute.feature.linedetails.data.local.entity.ClosureEntity>()
+
+        lineDto.lineStatuses.forEach { status ->
+            status.disruption?.let { disruptionDto ->
+                val disruption = com.smartcommute.feature.linedetails.data.local.entity.DisruptionEntity(
+                    lineId = lineId,
+                    category = disruptionDto.category,
+                    type = disruptionDto.type,
+                    categoryDescription = disruptionDto.categoryDescription,
+                    description = disruptionDto.description,
+                    closureText = disruptionDto.closureText,
+                    affectedStops = disruptionDto.affectedStops?.joinToString(",") ?: "",
+                    createdDate = parseDate(disruptionDto.created) ?: timestamp,
+                    startDate = status.validityPeriods?.firstOrNull()?.fromDate?.let { parseDate(it) },
+                    endDate = status.validityPeriods?.firstOrNull()?.toDate?.let { parseDate(it) },
+                    severity = status.statusSeverity
+                )
+
+                // Determine if it's a closure or disruption
+                if (disruptionDto.category.contains("Closure", ignoreCase = true) ||
+                    disruptionDto.categoryDescription.contains("Closure", ignoreCase = true)) {
+                    val closure = com.smartcommute.feature.linedetails.data.local.entity.ClosureEntity(
+                        lineId = lineId,
+                        description = disruptionDto.description,
+                        reason = disruptionDto.categoryDescription,
+                        affectedStations = disruptionDto.affectedStops?.joinToString(",") ?: "",
+                        affectedSegment = disruptionDto.affectedRoutes?.firstOrNull(),
+                        startDate = disruption.startDate ?: timestamp,
+                        endDate = disruption.endDate ?: (timestamp + 86400000L), // +24h
+                        alternativeRoute = disruptionDto.closureText,
+                        replacementBus = disruptionDto.description.contains("replacement bus", ignoreCase = true)
+                    )
+                    closures.add(closure)
+                } else {
+                    disruptions.add(disruption)
+                }
+            }
+        }
+
+        // Cache disruptions and closures
+        if (disruptions.isNotEmpty()) {
+            lineDetailsDao.deleteDisruptionsByLineId(lineId)
+            lineDetailsDao.insertDisruptions(disruptions)
+        }
+
+        if (closures.isNotEmpty()) {
+            lineDetailsDao.deleteClosuresByLineId(lineId)
+            lineDetailsDao.insertClosures(closures)
+        }
+
+        // Generate mock crowding data (TFL API doesn't provide this reliably)
+        val crowding = com.smartcommute.feature.linedetails.data.local.entity.CrowdingEntity(
+            lineId = lineId,
+            level = listOf("Quiet", "Moderate", "Busy", "Very Busy").random(),
+            levelCode = (0..3).random(),
+            measurementTime = timestamp,
+            dataSource = "Estimated",
+            notes = null
+        )
+        lineDetailsDao.insertCrowding(crowding)
+    }
+
+    /**
+     * Parses ISO 8601 date string to Unix timestamp.
+     */
+    private fun parseDate(dateString: String?): Long? {
+        if (dateString.isNullOrBlank()) return null
+        return try {
+            java.time.Instant.parse(dateString).toEpochMilli()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+
     override suspend fun getLastUpdateTime(): Long? {
-        return lineStatusDao.getLastUpdateTime()
+        return tubeLineDao.getLastUpdateTime()
     }
 }

@@ -1,5 +1,8 @@
 package com.smartcommute.feature.linestatus.ui
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,9 +29,12 @@ import com.smartcommute.feature.linestatus.ui.components.LoadingStateOverlay
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun LineStatusScreen(
+fun SharedTransitionScope.LineStatusScreen(
+    onLineClick: (String) -> Unit = {},
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    @Suppress("DEPRECATION")
     viewModel: LineStatusViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -44,7 +50,11 @@ fun LineStatusScreen(
                             contentDescription = stringResource(R.string.cd_refresh_status)
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                ),
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     ) { paddingValues ->
@@ -74,7 +84,11 @@ fun LineStatusScreen(
                             if (state.lastUpdated != null) {
                                 LastUpdatedText(timestamp = state.lastUpdated)
                             }
-                            LineStatusList(lines = state.lines)
+                            LineStatusList(
+                                lines = state.lines,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                onLineClick = onLineClick
+                            )
                         }
                     }
                 }
@@ -94,7 +108,11 @@ fun LineStatusScreen(
                                 if (state.lastUpdated != null) {
                                     LastUpdatedText(timestamp = state.lastUpdated)
                                 }
-                                LineStatusList(lines = state.cachedLines)
+                                LineStatusList(
+                                    lines = state.cachedLines,
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    onLineClick = onLineClick
+                                )
                             }
                         }
                     } else {
@@ -145,8 +163,13 @@ private fun LastUpdatedText(timestamp: Long) {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun LineStatusList(lines: List<UndergroundLine>) {
+private fun SharedTransitionScope.LineStatusList(
+    lines: List<UndergroundLine>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onLineClick: (String) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -156,7 +179,9 @@ private fun LineStatusList(lines: List<UndergroundLine>) {
             val lineColor = getLineColor(line.id)
             LineStatusItem(
                 line = line,
-                lineColor = lineColor
+                lineColor = lineColor,
+                animatedVisibilityScope = animatedVisibilityScope,
+                onClick = { onLineClick(line.id) }
             )
         }
     }

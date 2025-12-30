@@ -4,6 +4,7 @@
 
     <!-- Screen Titles -->
     <string name="tube_status_title">Tube Status</string>
+    <string name="line_details_title">Line Details</string>
 
     <!-- Status Types -->
     <string name="status_good_service">Good Service</string>
@@ -37,4 +38,39 @@
 
     <!-- Navigation -->
     <string name="nav_status">Status</string>
+    <string name="cd_navigate_back">Navigate back</string>
+
+    <!-- Line Details Screen -->
+    <string name="empty_state_no_disruptions">No disruptions reported</string>
+    <string name="empty_state_no_closures">No planned closures</string>
+    <string name="empty_state_no_crowding">No crowding information available</string>
+    <string name="error_line_not_found">Line details not found. Please refresh the tube status screen first.</string>
+    <string name="error_missing_line_id">LineDetailsViewModel requires lineId argument</string>
+
+    <!-- Card Headings -->
+    <string name="crowding_level">Crowding Level</string>
+    <string name="current_status">Current Status</string>
+    <string name="affected_stations">Affected stations:</string>
+
+    <!-- Actions -->
+    <string name="action_expand">Expand</string>
+    <string name="action_collapse">Collapse</string>
+
+    <!-- Date Formats -->
+    <string name="format_date_short">MMM dd, HH:mm</string>
+    <string name="format_date_long">MMM dd, yyyy \'at\' HH:mm</string>
+    <string name="format_measured_at">Measured: %s</string>
+    <string name="format_source">Source: %s</string>
+    <string name="format_duration">Duration: %1$s - %2$s</string>
+    <string name="format_last_updated">Last updated: %s</string>
+    <string name="format_station_image_desc">Station image for %s</string>
+
+    <!-- Status Type Names -->
+    <string name="status_type_good_service">Good Service</string>
+    <string name="status_type_minor_delays">Minor Delays</string>
+    <string name="status_type_major_delays">Major Delays</string>
+    <string name="status_type_severe_delays">Severe Delays</string>
+    <string name="status_type_closed">Closed</string>
+    <string name="status_type_part_closure">Part Closure</string>
+    <string name="status_type_service_disruption">Service Disruption</string>
 </resources>

@@ -32,3 +32,15 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Environment files
+.env*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+/.kotlin/sessions/*
