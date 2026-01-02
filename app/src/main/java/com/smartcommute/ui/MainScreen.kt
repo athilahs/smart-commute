@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,6 +53,30 @@ fun MainScreen() {
                             // Avoid multiple copies of the same destination
                             launchSingleTop = true
                             // Restore state when reselecting a previously selected item
+                            restoreState = true
+                        }
+                    }
+                )
+
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = null
+                        )
+                    },
+                    label = {
+                        Text(stringResource(R.string.nav_alerts))
+                    },
+                    selected = currentDestination?.hierarchy?.any {
+                        it.hasRoute(NavigationScreen.StatusAlerts::class)
+                    } == true,
+                    onClick = {
+                        navController.navigate(NavigationScreen.StatusAlerts.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
                             restoreState = true
                         }
                     }

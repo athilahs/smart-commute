@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.smartcommute.feature.linestatus.data.local.LineStatusDatabase
 import com.smartcommute.feature.linestatus.data.local.dao.TubeLineDao
 import com.smartcommute.feature.linedetails.data.local.dao.LineDetailsDao
+import com.smartcommute.feature.statusalerts.data.local.StatusAlertDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -108,7 +109,7 @@ object DatabaseModule {
             LineStatusDatabase::class.java,
             LineStatusDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, LineStatusDatabase.MIGRATION_2_3)
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -123,5 +124,11 @@ object DatabaseModule {
     @Singleton
     fun provideLineDetailsDao(database: LineStatusDatabase): LineDetailsDao {
         return database.lineDetailsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatusAlertDao(database: LineStatusDatabase): StatusAlertDao {
+        return database.statusAlertDao()
     }
 }

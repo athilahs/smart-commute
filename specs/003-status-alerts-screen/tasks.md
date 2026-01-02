@@ -35,9 +35,9 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Goal**: Prepare project structure, manifest permissions, and foundational components.
 
 **Tasks**:
-- [ ] T001 Add notification permissions to AndroidManifest.xml at app/src/main/AndroidManifest.xml (POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED)
-- [ ] T002 Create feature package structure at app/src/main/java/com/smartcommute/feature/statusalerts/ with subdirectories: ui, data/local, data/repository, data/receiver, domain/model, domain/util, notification, di
-- [ ] T003 Create notification channels initialization in Application class (create silent, default, and urgent channels in SmartCommuteApplication.kt onCreate)
+- [x] T001 Add notification permissions to AndroidManifest.xml at app/src/main/AndroidManifest.xml (POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED)
+- [x] T002 Create feature package structure at app/src/main/java/com/smartcommute/feature/statusalerts/ with subdirectories: ui, data/local, data/repository, data/receiver, domain/model, domain/util, notification, di
+- [x] T003 Create notification channels initialization in Application class (create silent, default, and urgent channels in SmartCommuteApplication.kt onCreate)
 
 **Completion Criteria**: Manifest permissions added, directory structure created, notification channels registered.
 
@@ -50,18 +50,18 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Dependencies**: Phase 1 complete
 
 **Tasks**:
-- [ ] T004 Create StatusAlert domain model in app/src/main/java/com/smartcommute/feature/statusalerts/domain/model/StatusAlert.kt (include id, time, selectedDays, selectedTubeLines, isEnabled, createdAt, lastModifiedAt, getDisplayTime, getDisplayDays methods)
-- [ ] T005 [P] Create StatusAlertEntity Room entity in app/src/main/java/com/smartcommute/feature/statusalerts/data/local/StatusAlertEntity.kt (with toDomain and toEntity extension functions)
-- [ ] T006 Create StatusAlertDao interface in app/src/main/java/com/smartcommute/feature/statusalerts/data/local/StatusAlertDao.kt (observeAll, getEnabledAlarms, getById, insert, update, deleteById, getCount, enable, disable methods)
-- [ ] T007 Update existing Room database class to include StatusAlertEntity and StatusAlertDao (increment database version, add migration MIGRATION_1_2)
-- [ ] T008 [P] Create AlarmScheduler interface in app/src/main/java/com/smartcommute/feature/statusalerts/domain/util/AlarmScheduler.kt
-- [ ] T009 Implement AlarmSchedulerImpl in app/src/main/java/com/smartcommute/feature/statusalerts/domain/util/AlarmSchedulerImpl.kt (scheduleAlarm, cancelAlarm, calculateNextTriggerTime methods with exact alarm API)
-- [ ] T010 Create StatusAlertsRepository interface in app/src/main/java/com/smartcommute/feature/statusalerts/data/repository/StatusAlertsRepository.kt (observeAllAlarms, getEnabledAlarms, getAlarmById, createAlarm, updateAlarm, deleteAlarm, enableAlarm, disableAlarm, getAlarmCount methods)
-- [ ] T011 Implement StatusAlertsRepositoryImpl in app/src/main/java/com/smartcommute/feature/statusalerts/data/repository/StatusAlertsRepositoryImpl.kt (integrate Room DAO and AlarmScheduler, implement 10-alarm limit validation)
-- [ ] T012 [P] Create AlarmModule Hilt module in app/src/main/java/com/smartcommute/feature/statusalerts/di/AlarmModule.kt (provide AlarmManager and AlarmScheduler)
-- [ ] T013 [P] Create StatusAlertsRepositoryModule Hilt module in app/src/main/java/com/smartcommute/feature/statusalerts/di/StatusAlertsRepositoryModule.kt (bind repository interface to implementation)
-- [ ] T014 [P] Create UI state models in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsUiState.kt (StatusAlertsUiState sealed class with Loading, Success, Error states)
-- [ ] T015 [P] Create AlarmConfigurationState in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmConfigurationState.kt (with validation logic)
+- [x] T004 Create StatusAlert domain model in app/src/main/java/com/smartcommute/feature/statusalerts/domain/model/StatusAlert.kt (include id, time, selectedDays, selectedTubeLines, isEnabled, createdAt, lastModifiedAt, getDisplayTime, getDisplayDays methods)
+- [x] T005 [P] Create StatusAlertEntity Room entity in app/src/main/java/com/smartcommute/feature/statusalerts/data/local/StatusAlertEntity.kt (with toDomain and toEntity extension functions)
+- [x] T006 Create StatusAlertDao interface in app/src/main/java/com/smartcommute/feature/statusalerts/data/local/StatusAlertDao.kt (observeAll, getEnabledAlarms, getById, insert, update, deleteById, getCount, enable, disable methods)
+- [x] T007 Update existing Room database class to include StatusAlertEntity and StatusAlertDao (increment database version, add migration MIGRATION_1_2)
+- [x] T008 [P] Create AlarmScheduler interface in app/src/main/java/com/smartcommute/feature/statusalerts/domain/util/AlarmScheduler.kt
+- [x] T009 Implement AlarmSchedulerImpl in app/src/main/java/com/smartcommute/feature/statusalerts/domain/util/AlarmSchedulerImpl.kt (scheduleAlarm, cancelAlarm, calculateNextTriggerTime methods with exact alarm API)
+- [x] T010 Create StatusAlertsRepository interface in app/src/main/java/com/smartcommute/feature/statusalerts/data/repository/StatusAlertsRepository.kt (observeAllAlarms, getEnabledAlarms, getAlarmById, createAlarm, updateAlarm, deleteAlarm, enableAlarm, disableAlarm, getAlarmCount methods)
+- [x] T011 Implement StatusAlertsRepositoryImpl in app/src/main/java/com/smartcommute/feature/statusalerts/data/repository/StatusAlertsRepositoryImpl.kt (integrate Room DAO and AlarmScheduler, implement 10-alarm limit validation)
+- [x] T012 [P] Create AlarmModule Hilt module in app/src/main/java/com/smartcommute/feature/statusalerts/di/AlarmModule.kt (provide AlarmManager and AlarmScheduler)
+- [x] T013 [P] Create StatusAlertsRepositoryModule Hilt module in app/src/main/java/com/smartcommute/feature/statusalerts/di/StatusAlertsRepositoryModule.kt (bind repository interface to implementation)
+- [x] T014 [P] Create UI state models in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsUiState.kt (StatusAlertsUiState sealed class with Loading, Success, Error states)
+- [x] T015 [P] Create AlarmConfigurationState in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmConfigurationState.kt (with validation logic)
 
 **Completion Criteria**: All foundational data infrastructure ready for user story implementation.
 
@@ -78,10 +78,10 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Independent Test**: Open Status Alerts screen without notification permission granted → verify permission prompt appears → grant permission → confirm normal UI displays.
 
 **Tasks**:
-- [ ] T016 [P] [US1] Create basic StatusAlertsViewModel in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsViewModel.kt (inject repository, expose StateFlow<StatusAlertsUiState>, implement observeAlarms method)
-- [ ] T017 [US1] Create StatusAlertsScreen composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsScreen.kt (implement notification permission request logic using rememberLauncherForActivityResult, display permission denial dialog with settings navigation)
-- [ ] T018 [US1] Add status alerts navigation route to NavGraph.kt in app/src/main/java/com/smartcommute/core/navigation/NavGraph.kt (route: "status_alerts")
-- [ ] T019 [US1] Update bottom navigation in MainScreen.kt to include "Alerts" tab with navigation to StatusAlertsScreen
+- [x] T016 [P] [US1] Create basic StatusAlertsViewModel in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsViewModel.kt (inject repository, expose StateFlow<StatusAlertsUiState>, implement observeAlarms method)
+- [x] T017 [US1] Create StatusAlertsScreen composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/StatusAlertsScreen.kt (implement notification permission request logic using rememberLauncherForActivityResult, display permission denial dialog with settings navigation)
+- [x] T018 [US1] Add status alerts navigation route to NavGraph.kt in app/src/main/java/com/smartcommute/core/navigation/NavGraph.kt (route: "status_alerts")
+- [x] T019 [US1] Update bottom navigation in MainScreen.kt to include "Alerts" tab with navigation to StatusAlertsScreen
 
 **Completion Criteria**: Permission requested on screen open, denial handled with settings guidance, normal UI displays after grant.
 
