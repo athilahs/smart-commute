@@ -136,8 +136,10 @@ class AlarmSchedulerImpl @Inject constructor(
     ): Long {
         if (selectedDays.isEmpty()) return 0L // Safety check
 
+        // Check up to 8 days ahead to ensure we find at least one match
+        // (7 days to cover a full week + 1 extra day to handle edge cases)
         var daysAhead = 0
-        while (daysAhead < 7) {
+        while (daysAhead < 8) {
             val candidateDate = now.plusDays(daysAhead.toLong())
             val candidateDay = candidateDate.dayOfWeek
 
@@ -150,9 +152,10 @@ class AlarmSchedulerImpl @Inject constructor(
             daysAhead++
         }
 
-        // No match found in next 7 days (shouldn't happen), default to next week
-        val nextWeekStart = now.plusDays(7)
-        return findNextRecurringTrigger(nextWeekStart, targetTime, selectedDays)
+        // This should never happen if selectedDays is not empty, but as a fallback
+        // return a time 7 days from now at the target time
+        Log.e(TAG, "Failed to find next recurring trigger for days: $selectedDays")
+        return now.plusDays(7).with(targetTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 
     companion object {

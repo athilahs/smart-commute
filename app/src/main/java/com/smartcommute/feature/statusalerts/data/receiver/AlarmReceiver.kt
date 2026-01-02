@@ -121,8 +121,12 @@ class AlarmReceiver : BroadcastReceiver() {
                         if (alarm != null && alarm.isRecurring && alarm.isEnabled) {
                             Log.d(TAG, "Rescheduling recurring alarm $alarmId")
                             alarmScheduler.scheduleAlarm(context, alarm)
+                        } else if (alarm != null && alarm.isOneTime) {
+                            // Auto-disable one-time alarms after trigger
+                            Log.d(TAG, "Disabling one-time alarm $alarmId after trigger")
+                            statusAlertsRepository.disableAlarm(alarmId)
                         } else {
-                            Log.d(TAG, "Alarm $alarmId is one-time or not enabled, not rescheduling")
+                            Log.d(TAG, "Alarm $alarmId is disabled or not found, not rescheduling")
                         }
                     }
 

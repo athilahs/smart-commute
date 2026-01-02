@@ -66,9 +66,10 @@ fun MainScreen(intent: Intent? = null) {
                     label = {
                         Text(stringResource(R.string.nav_status))
                     },
-                    selected = currentDestination?.hierarchy?.any {
-                        it.hasRoute(NavigationScreen.LineStatus::class)
-                    } == true,
+                    selected = currentDestination?.route?.let { route ->
+                        route == NavigationScreen.LineStatus.route ||
+                        route.startsWith("line_details/")
+                    } ?: false,
                     onClick = {
                         navController.navigate(NavigationScreen.LineStatus.route) {
                             // Pop up to the start destination of the graph to
@@ -81,7 +82,14 @@ fun MainScreen(intent: Intent? = null) {
                             // Restore state when reselecting a previously selected item
                             restoreState = true
                         }
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
                 NavigationBarItem(
@@ -94,9 +102,7 @@ fun MainScreen(intent: Intent? = null) {
                     label = {
                         Text(stringResource(R.string.nav_alerts))
                     },
-                    selected = currentDestination?.hierarchy?.any {
-                        it.hasRoute(NavigationScreen.StatusAlerts::class)
-                    } == true,
+                    selected = currentDestination?.route == NavigationScreen.StatusAlerts.route,
                     onClick = {
                         navController.navigate(NavigationScreen.StatusAlerts.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -105,7 +111,14 @@ fun MainScreen(intent: Intent? = null) {
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
                 // Future navigation items will be added here

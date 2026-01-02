@@ -33,10 +33,11 @@ class StatusAlertsViewModel @Inject constructor(
                     )
                 }
                 .collect { alarms ->
+                    val enabledCount = alarms.count { it.isEnabled }
                     _uiState.value = StatusAlertsUiState.Success(
                         alarms = alarms,
                         alarmCount = alarms.size,
-                        canCreateMore = alarms.size < 10
+                        canCreateMore = enabledCount < 10
                     )
                 }
         }

@@ -34,6 +34,7 @@ fun StatusAlertsScreen(
 
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
     var showExactAlarmDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
     var alarmConfiguration by remember {
         mutableStateOf(
@@ -176,6 +177,33 @@ fun StatusAlertsScreen(
         )
     }
 
+    // Delete confirmation dialog
+    if (showDeleteConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmationDialog = false },
+            title = { Text("Delete Alarm") },
+            text = {
+                Text("Are you sure you want to delete this alarm? This action cannot be undone.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    alarmConfiguration.alarmId?.let { id ->
+                        viewModel.deleteAlarm(id)
+                    }
+                    showDeleteConfirmationDialog = false
+                    showBottomSheet = false
+                }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmationDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -271,9 +299,16 @@ fun StatusAlertsScreen(
             alarmConfiguration = alarmConfiguration,
             onConfigurationChanged = { alarmConfiguration = it },
             onSave = {
-                viewModel.createAlarm(alarmConfiguration.toStatusAlert())
+                if (alarmConfiguration.isEditMode) {
+                    viewModel.updateAlarm(alarmConfiguration.toStatusAlert())
+                } else {
+                    viewModel.createAlarm(alarmConfiguration.toStatusAlert())
+                }
                 showBottomSheet = false
             },
+            onDelete = if (alarmConfiguration.isEditMode) {
+                { showDeleteConfirmationDialog = true }
+            } else null,
             onDismiss = { showBottomSheet = false }
         )
     }

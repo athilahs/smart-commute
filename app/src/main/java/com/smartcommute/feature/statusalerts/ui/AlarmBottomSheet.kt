@@ -15,7 +15,7 @@ import java.time.LocalTime
 
 /**
  * Bottom sheet for creating or editing status alarms.
- * Includes time picker, weekday selector, tube line picker, and save/cancel buttons.
+ * Includes time picker, weekday selector, tube line picker, and save/cancel/delete buttons.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,13 +23,18 @@ fun AlarmBottomSheet(
     alarmConfiguration: AlarmConfigurationState,
     onConfigurationChanged: (AlarmConfigurationState) -> Unit,
     onSave: () -> Unit,
+    onDelete: (() -> Unit)? = null,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         modifier = modifier
     ) {
         Column(
@@ -129,13 +134,27 @@ fun AlarmBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Cancel")
+                // Left button: Cancel (create mode) or Delete (edit mode)
+                if (alarmConfiguration.isEditMode && onDelete != null) {
+                    OutlinedButton(
+                        onClick = onDelete,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Delete")
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Cancel")
+                    }
                 }
 
+                // Right button: Save or Update
                 Button(
                     onClick = onSave,
                     enabled = alarmConfiguration.isValid,
