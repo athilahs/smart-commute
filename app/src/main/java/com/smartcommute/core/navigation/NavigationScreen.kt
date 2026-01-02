@@ -8,7 +8,16 @@ sealed class NavigationScreen(val route: String) {
     data object LineStatus : NavigationScreen("line_status")
 
     @Serializable
-    data class LineDetails(val lineId: String) : NavigationScreen("line_details/{lineId}")
+    data class LineDetails(val lineId: String) : NavigationScreen("line_details/{lineId}") {
+        companion object {
+            const val ROUTE_TEMPLATE = "line_details/{lineId}"
+
+            fun createRoute(lineId: String): String = "line_details/$lineId"
+        }
+    }
+
+    @Serializable
+    data object StatusAlerts : NavigationScreen("status_alerts")
 
     // Placeholder for future features
     // @Serializable

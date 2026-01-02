@@ -38,6 +38,7 @@
 
     <!-- Navigation -->
     <string name="nav_status">Status</string>
+    <string name="nav_alerts">Alerts</string>
     <string name="cd_navigate_back">Navigate back</string>
 
     <!-- Line Details Screen -->

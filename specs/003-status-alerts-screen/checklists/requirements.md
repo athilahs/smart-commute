@@ -92,8 +92,8 @@
 
 ## Clarification Status
 
-- [ ] CHK062 CLARIFICATION NEEDED: Missed alarm notification behavior (see Open Questions in spec)
-- [ ] CHK063 CLARIFICATION NEEDED: Notification snooze functionality (see Open Questions in spec)
+- [x] CHK062 RESOLVED: Missed alarm notification behavior - silently skip and wait for next scheduled occurrence (documented in Clarifications Session 2025-12-29)
+- [x] CHK063 RESOLVED: Notification snooze functionality - no snooze, keep notifications simple and informational only (documented in Clarifications Session 2025-12-29)
 - [x] CHK064 RESOLVED: TfL API error handling - error notification with specific message defined
 - [x] CHK065 RESOLVED: Notification permission - will be requested at runtime
 - [x] CHK066 RESOLVED: Time zone handling - uses device's current time zone

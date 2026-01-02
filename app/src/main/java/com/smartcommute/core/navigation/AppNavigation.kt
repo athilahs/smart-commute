@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.smartcommute.feature.linedetails.ui.LineDetailsScreen
 import com.smartcommute.feature.linestatus.ui.LineStatusScreen
+import com.smartcommute.feature.statusalerts.ui.StatusAlertsScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -27,14 +28,14 @@ fun AppNavigation(
             composable(NavigationScreen.LineStatus.route) {
                 LineStatusScreen(
                     onLineClick = { lineId ->
-                        navController.navigate("line_details/$lineId")
+                        navController.navigate(NavigationScreen.LineDetails.createRoute(lineId))
                     },
                     animatedVisibilityScope = this
                 )
             }
 
             composable(
-                route = "line_details/{lineId}",
+                route = NavigationScreen.LineDetails.ROUTE_TEMPLATE,
                 arguments = listOf(
                     navArgument("lineId") {
                         type = NavType.StringType
@@ -47,6 +48,10 @@ fun AppNavigation(
                     },
                     animatedVisibilityScope = this
                 )
+            }
+
+            composable(NavigationScreen.StatusAlerts.route) {
+                StatusAlertsScreen()
             }
 
             // Future feature routes will be added here

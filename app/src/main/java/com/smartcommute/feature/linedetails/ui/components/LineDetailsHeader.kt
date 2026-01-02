@@ -144,7 +144,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                     .size(iconSize)
                     .alpha(contentAlpha)
                     .clip(CircleShape)
-                    .background(lineColor.copy(alpha = 0.15f))
+                    .background(lineColor.copy(alpha = 0.30f))
                     .sharedElement(
                         rememberSharedContentState(key = "line_icon_$lineId"),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -176,16 +176,16 @@ private fun getLineGradient(lineId: String): Brush {
 
     return when (normalizedId) {
         "bakerloo" -> Brush.linearGradient(
-            colors = listOf(Color(0xFFB36305), Color(0xFF8B4E04), Color(0xFFB36305))
+            colors = listOf(Color(0xFFB36305), Color(0xFFD88A30), Color.White)
         )
         "central" -> Brush.linearGradient(
-            colors = listOf(Color(0xFFDC241F), Color(0xFFB01C18), Color(0xFFDC241F))
+            colors = listOf(Color(0xFFDC241F), Color(0xFFE85C56), Color.White)
         )
         "circle" -> Brush.linearGradient(
             colors = listOf(Color(0xFFFFD329), Color(0xFFE6BE24), Color(0xFFFFD329))
         )
         "district" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF007D32), Color(0xFF006428), Color(0xFF007D32))
+            colors = listOf(Color(0xFF007D32), Color(0xFF33A35C), Color.White)
         )
         "hammersmithcity", "hammersmith&city" -> Brush.linearGradient(
             colors = listOf(Color(0xFFF491A8), Color(0xFFE17A91), Color(0xFFF491A8))
@@ -194,16 +194,16 @@ private fun getLineGradient(lineId: String): Brush {
             colors = listOf(Color(0xFFA1A5A7), Color(0xFF8A8E90), Color(0xFFA1A5A7))
         )
         "metropolitan" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF9B0058), Color(0xFF7A0046), Color(0xFF9B0058))
+            colors = listOf(Color(0xFF9B0058), Color(0xFFC03380), Color.White)
         )
         "northern" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF000000), Color(0xFF1A1A1A), Color(0xFF000000))
+            colors = listOf(Color(0xFF000000), Color(0xFF666666), Color.White)
         )
         "piccadilly" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF0019A8), Color(0xFF001486), Color(0xFF0019A8))
+            colors = listOf(Color(0xFF0019A8), Color(0xFF3366CC), Color.White)
         )
         "victoria" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF0098D8), Color(0xFF007AAD), Color(0xFF0098D8))
+            colors = listOf(Color(0xFF0098D8), Color(0xFF33B3E6), Color.White)
         )
         "waterloocity", "waterloo&city" -> Brush.linearGradient(
             colors = listOf(Color(0xFF93CEBA), Color(0xFF7AB9A6), Color(0xFF93CEBA))

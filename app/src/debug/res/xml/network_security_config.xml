@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Debug configuration to allow proxy traffic monitoring -->
+    <!-- SECURITY WARNING: This configuration trusts user-installed certificates -->
+    <!-- This should ONLY be used in debug builds, NEVER in production -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- Trust system certificates -->
+            <certificates src="system" />
+            <!-- Trust user-installed certificates (for proxy tools like Charles, mitmproxy, Fiddler) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             }
 
             SmartCommuteTheme {
-                MainScreen()
+                MainScreen(intent = intent)
             }
         }
     }
