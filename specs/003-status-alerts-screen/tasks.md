@@ -98,18 +98,18 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Independent Test**: Tap FAB → configure time, weekday, tube line → save → verify alarm appears in list → verify notification triggers at scheduled time.
 
 **Tasks**:
-- [ ] T020 [P] [US2] Create EmptyStateView composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/EmptyStateView.kt (display when no alarms exist, include call-to-action)
-- [ ] T021 [P] [US2] Create TimePickerDialog composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/TimePickerDialog.kt (Material Design 3 TimePicker in AlertDialog)
-- [ ] T022 [P] [US2] Create WeekdaySelector composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/WeekdaySelector.kt (FilterChip multi-select for days of week)
-- [ ] T023 [P] [US2] Create TubeLinePicker composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/TubeLinePicker.kt (Checkbox + LazyColumn, fetch available lines from LineStatusRepository)
-- [ ] T024 [US2] Create AlarmBottomSheet composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmBottomSheet.kt (ModalBottomSheet with time picker, weekday selector, tube line picker, save/cancel buttons, validation error display)
-- [ ] T025 [US2] Update StatusAlertsScreen to display empty state, alarm list (LazyColumn), and FAB (visible when alarm count < 10)
-- [ ] T026 [US2] Implement createAlarm action in StatusAlertsViewModel (validate, call repository, handle errors)
-- [ ] T027 [P] [US2] Create AlarmReceiver BroadcastReceiver in app/src/main/java/com/smartcommute/feature/statusalerts/data/receiver/AlarmReceiver.kt (fetch TfL API status, determine silent vs audible, send notification)
-- [ ] T028 [P] [US2] Create BootCompletedReceiver BroadcastReceiver in app/src/main/java/com/smartcommute/feature/statusalerts/data/receiver/BootCompletedReceiver.kt (reschedule all enabled alarms on boot)
-- [ ] T029 [US2] Register AlarmReceiver and BootCompletedReceiver in AndroidManifest.xml with intent filters
-- [ ] T030 [P] [US2] Create NotificationManager utility in app/src/main/java/com/smartcommute/feature/statusalerts/notification/NotificationManager.kt (sendStatusNotification, sendErrorNotification, use InboxStyle for multiple lines)
-- [ ] T031 [US2] Implement TfL API integration in AlarmReceiver (reuse existing TfL API service from feature 001 to fetch line statuses)
+- [x] T020 [P] [US2] Create EmptyStateView composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/EmptyStateView.kt (display when no alarms exist, include call-to-action)
+- [x] T021 [P] [US2] Create TimePickerDialog composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/TimePickerDialog.kt (Material Design 3 TimePicker in AlertDialog)
+- [x] T022 [P] [US2] Create WeekdaySelector composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/WeekdaySelector.kt (FilterChip multi-select for days of week)
+- [x] T023 [P] [US2] Create TubeLinePicker composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/components/TubeLinePicker.kt (Checkbox + LazyColumn, fetch available lines from LineStatusRepository)
+- [x] T024 [US2] Create AlarmBottomSheet composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmBottomSheet.kt (ModalBottomSheet with time picker, weekday selector, tube line picker, save/cancel buttons, validation error display)
+- [x] T025 [US2] Update StatusAlertsScreen to display empty state, alarm list (LazyColumn), and FAB (visible when alarm count < 10)
+- [x] T026 [US2] Implement createAlarm action in StatusAlertsViewModel (validate, call repository, handle errors)
+- [x] T027 [P] [US2] Create AlarmReceiver BroadcastReceiver in app/src/main/java/com/smartcommute/feature/statusalerts/data/receiver/AlarmReceiver.kt (fetch TfL API status, determine silent vs audible, send notification)
+- [x] T028 [P] [US2] Create BootCompletedReceiver BroadcastReceiver in app/src/main/java/com/smartcommute/feature/statusalerts/data/receiver/BootCompletedReceiver.kt (reschedule all enabled alarms on boot)
+- [x] T029 [US2] Register AlarmReceiver and BootCompletedReceiver in AndroidManifest.xml with intent filters
+- [x] T030 [P] [US2] Create NotificationManager utility in app/src/main/java/com/smartcommute/feature/statusalerts/notification/NotificationManager.kt (sendStatusNotification, sendErrorNotification, use InboxStyle for multiple lines)
+- [x] T031 [US2] Implement TfL API integration in AlarmReceiver (reuse existing TfL API service from feature 001 to fetch line statuses)
 
 **Completion Criteria**: Users can create alarms via FAB, alarms persist and display in list, notifications trigger at scheduled time with correct sound behavior.
 

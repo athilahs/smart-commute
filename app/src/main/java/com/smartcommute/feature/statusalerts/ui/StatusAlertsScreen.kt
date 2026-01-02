@@ -29,6 +29,12 @@ fun StatusAlertsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var alarmConfiguration by remember {
+        mutableStateOf(
+            AlarmConfigurationState()
+        )
+    }
     var hasPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -102,7 +108,8 @@ fun StatusAlertsScreen(
                 if (successState.canCreateMore) {
                     FloatingActionButton(
                         onClick = {
-                            // TODO: Open bottom sheet for creating alarm (Phase 4)
+                            alarmConfiguration = AlarmConfigurationState()
+                            showBottomSheet = true
                         }
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Create alarm")
@@ -125,8 +132,7 @@ fun StatusAlertsScreen(
 
                 is StatusAlertsUiState.Success -> {
                     if (state.alarms.isEmpty()) {
-                        // Empty state - will be implemented in Phase 4 (T020)
-                        EmptyStateContent(
+                        EmptyStateView(
                             hasPermission = hasPermission,
                             onRequestPermission = {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -162,54 +168,17 @@ fun StatusAlertsScreen(
             }
         }
     }
-}
 
-@Composable
-private fun EmptyStateContent(
-    hasPermission: Boolean,
-    onRequestPermission: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        if (!hasPermission) {
-            Text(
-                text = "Notification Permission Required",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Status alerts need notification permission to notify you about tube line statuses at scheduled times.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = onRequestPermission) {
-                Text("Grant Permission")
-            }
-        } else {
-            Text(
-                text = "No Alarms Configured",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Create your first status alert to receive notifications about tube line disruptions at scheduled times.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Tap the + button below to get started",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+    // Alarm configuration bottom sheet
+    if (showBottomSheet) {
+        AlarmBottomSheet(
+            alarmConfiguration = alarmConfiguration,
+            onConfigurationChanged = { alarmConfiguration = it },
+            onSave = {
+                viewModel.createAlarm(alarmConfiguration.toStatusAlert())
+                showBottomSheet = false
+            },
+            onDismiss = { showBottomSheet = false }
+        )
     }
 }
