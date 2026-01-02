@@ -1,6 +1,7 @@
 package com.smartcommute.feature.statusalerts.ui
 
 import android.Manifest
+import android.app.AlarmManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -8,6 +9,8 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -19,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +33,7 @@ fun StatusAlertsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showExactAlarmDialog by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
     var alarmConfiguration by remember {
         mutableStateOf(
@@ -48,12 +53,31 @@ fun StatusAlertsScreen(
         )
     }
 
+    var hasExactAlarmPermission by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(AlarmManager::class.java)
+                alarmManager?.canScheduleExactAlarms() ?: false
+            } else {
+                true // No permission needed on Android < 12
+            }
+        )
+    }
+
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasPermission = isGranted
         if (!isGranted) {
             showPermissionDeniedDialog = true
+        } else {
+            // After granting notification permission, check exact alarm permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(AlarmManager::class.java)
+                if (alarmManager?.canScheduleExactAlarms() == false) {
+                    showExactAlarmDialog = true
+                }
+            }
         }
     }
 
@@ -61,6 +85,30 @@ fun StatusAlertsScreen(
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasPermission) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // If notification permission is already granted, check exact alarm permission
+            val alarmManager = context.getSystemService(AlarmManager::class.java)
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                showExactAlarmDialog = true
+            }
+        }
+    }
+
+    // Re-check exact alarm permission when returning to the app
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val callback = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val alarmManager = context.getSystemService(AlarmManager::class.java)
+                    hasExactAlarmPermission = alarmManager?.canScheduleExactAlarms() ?: false
+                }
+            }
+        }
+        val lifecycle = lifecycleOwner.lifecycle
+        lifecycle.addObserver(callback)
+        onDispose {
+            lifecycle.removeObserver(callback)
         }
     }
 
@@ -89,6 +137,39 @@ fun StatusAlertsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showPermissionDeniedDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Exact alarm permission dialog
+    if (showExactAlarmDialog) {
+        AlertDialog(
+            onDismissRequest = { showExactAlarmDialog = false },
+            title = { Text("Alarms & Reminders Permission Required") },
+            text = {
+                Text(
+                    "Status alerts need permission to schedule exact alarms so they can notify you " +
+                    "at the precise time you set. Please enable 'Alarms & reminders' permission in settings."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showExactAlarmDialog = false
+                    // Open exact alarm settings (Android 12+)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        context.startActivity(intent)
+                    }
+                }) {
+                    Text("Open Settings")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExactAlarmDialog = false }) {
                     Text("Cancel")
                 }
             }
@@ -133,21 +214,36 @@ fun StatusAlertsScreen(
                 is StatusAlertsUiState.Success -> {
                     if (state.alarms.isEmpty()) {
                         EmptyStateView(
-                            hasPermission = hasPermission,
+                            hasPermission = hasPermission && hasExactAlarmPermission,
                             onRequestPermission = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasPermission) {
                                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !hasExactAlarmPermission) {
+                                    showExactAlarmDialog = true
                                 }
                             }
                         )
                     } else {
-                        // Alarm list - will be implemented in Phase 5 (T033-T034)
-                        Text(
-                            text = "Alarms list will be displayed here (${state.alarmCount} alarms)",
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(16.dp)
-                        )
+                        // Alarm list with AlarmListItem
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(state.alarms) { alarm ->
+                                AlarmListItem(
+                                    alarm = alarm,
+                                    onToggleEnabled = { isEnabled ->
+                                        viewModel.toggleAlarmEnabled(alarm.id, isEnabled)
+                                    },
+                                    onClick = {
+                                        // Open bottom sheet for editing (will be implemented in Phase 9)
+                                        alarmConfiguration = AlarmConfigurationState.fromStatusAlert(alarm)
+                                        showBottomSheet = true
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
 

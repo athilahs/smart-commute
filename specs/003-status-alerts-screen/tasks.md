@@ -126,11 +126,11 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Independent Test**: Create alarm with 3 tube lines → save → verify all 3 lines display in list item → trigger alarm → verify notification shows status for all 3 lines.
 
 **Tasks**:
-- [ ] T032 [US3] Update TubeLinePicker to support multi-select (already implemented in T023, verify behavior)
-- [ ] T033 [US3] Create AlarmListItem composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmListItem.kt (display time, weekdays, multiple tube lines with colored badges, enable/disable toggle)
-- [ ] T034 [US3] Update StatusAlertsScreen to use AlarmListItem in LazyColumn
-- [ ] T035 [US3] Update NotificationManager to handle multiple tube lines in single expandable notification (InboxStyle with all line statuses)
-- [ ] T036 [US3] Update AlarmReceiver notification logic to determine silent vs audible based on "if ANY line has disruptions, audible; if ALL lines are Good Service, silent"
+- [x] T032 [US3] Update TubeLinePicker to support multi-select (already implemented in T023, verify behavior)
+- [x] T033 [US3] Create AlarmListItem composable in app/src/main/java/com/smartcommute/feature/statusalerts/ui/AlarmListItem.kt (display time, weekdays, multiple tube lines with colored badges, enable/disable toggle)
+- [x] T034 [US3] Update StatusAlertsScreen to use AlarmListItem in LazyColumn
+- [x] T035 [US3] Update NotificationManager to handle multiple tube lines in single expandable notification (InboxStyle with all line statuses)
+- [x] T036 [US3] Update AlarmReceiver notification logic to determine silent vs audible based on "if ANY line has disruptions, audible; if ALL lines are Good Service, silent"
 
 **Completion Criteria**: Alarms can include multiple tube lines, list displays all selected lines, notifications show all line statuses in single expandable notification.
 
@@ -147,10 +147,10 @@ Tasks marked with **[P]** can be executed in parallel with other [P] tasks in th
 **Independent Test**: Create alarm for Monday-Friday → verify triggers on weekdays → verify does not trigger on Saturday-Sunday → verify triggers again next week.
 
 **Tasks**:
-- [ ] T037 [US4] Update AlarmSchedulerImpl calculateNextTriggerTime to handle recurring alarms (find next matching weekday, reschedule after trigger)
-- [ ] T038 [US4] Update AlarmReceiver to reschedule recurring alarms after trigger (call AlarmScheduler.scheduleAlarm with next occurrence)
-- [ ] T039 [US4] Update AlarmListItem to display weekday abbreviations (M-F, Mon/Wed/Fri, or "Weekdays")
-- [ ] T040 [US4] Update BootCompletedReceiver to restore all enabled recurring alarms on device reboot
+- [x] T037 [US4] Update AlarmSchedulerImpl calculateNextTriggerTime to handle recurring alarms (find next matching weekday, reschedule after trigger)
+- [x] T038 [US4] Update AlarmReceiver to reschedule recurring alarms after trigger (call AlarmScheduler.scheduleAlarm with next occurrence)
+- [x] T039 [US4] Update AlarmListItem to display weekday abbreviations (M-F, Mon/Wed/Fri, or "Weekdays")
+- [x] T040 [US4] Update BootCompletedReceiver to restore all enabled recurring alarms on device reboot
 
 **Completion Criteria**: Recurring alarms trigger on selected weekdays, reschedule automatically after each trigger, persist across device reboots.
 

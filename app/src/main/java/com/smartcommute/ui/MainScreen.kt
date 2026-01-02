@@ -1,5 +1,6 @@
 package com.smartcommute.ui
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,10 +21,34 @@ import androidx.navigation.compose.rememberNavController
 import com.smartcommute.R
 import com.smartcommute.core.navigation.AppNavigation
 import com.smartcommute.core.navigation.NavigationScreen
+import com.smartcommute.feature.statusalerts.notification.StatusAlertsNotificationManager
 
 @Composable
-fun MainScreen() {
+fun MainScreen(intent: Intent? = null) {
     val navController = rememberNavController()
+
+    // Handle notification click navigation
+    LaunchedEffect(intent) {
+        intent?.let {
+            val navigateTo = it.getStringExtra(StatusAlertsNotificationManager.EXTRA_NAVIGATE_TO)
+            when (navigateTo) {
+                StatusAlertsNotificationManager.NAVIGATE_TO_LINE_DETAILS -> {
+                    val lineId = it.getStringExtra(StatusAlertsNotificationManager.EXTRA_LINE_ID)
+                    lineId?.let { id ->
+                        navController.navigate(NavigationScreen.LineDetails.createRoute(id))
+                    }
+                }
+                StatusAlertsNotificationManager.NAVIGATE_TO_STATUS -> {
+                    navController.navigate(NavigationScreen.LineStatus.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
