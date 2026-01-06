@@ -34,10 +34,27 @@ android {
         buildConfigField("String", "TFL_API_KEY", "\"${properties.getProperty("TFL_API_KEY", "")}\"")
     }
 
+    signingConfigs {
+        create("release") {
+            // Load signing config from local.properties
+            val properties = Properties()
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use { properties.load(it) }
+                storeFile = properties.getProperty("RELEASE_STORE_FILE")?.let { file(it) }
+                storePassword = properties.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
+                keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false

@@ -43,6 +43,8 @@
 # Keep DTOs for Gson deserialization
 -keep class com.smartcommute.feature.linestatus.data.remote.dto.** { *; }
 -keepclassmembers class com.smartcommute.feature.linestatus.data.remote.dto.** { *; }
+-keep class com.smartcommute.feature.linedetails.data.remote.dto.** { *; }
+-keepclassmembers class com.smartcommute.feature.linedetails.data.remote.dto.** { *; }
 
 # Room
 -keep class * extends androidx.room.RoomDatabase
@@ -52,6 +54,10 @@
 # Keep Room entities
 -keep class com.smartcommute.feature.linestatus.data.local.entity.** { *; }
 -keepclassmembers class com.smartcommute.feature.linestatus.data.local.entity.** { *; }
+-keep class com.smartcommute.feature.statusalerts.data.local.** { *; }
+-keepclassmembers class com.smartcommute.feature.statusalerts.data.local.** { *; }
+-keep class com.smartcommute.feature.linedetails.data.local.** { *; }
+-keepclassmembers class com.smartcommute.feature.linedetails.data.local.** { *; }
 
 # Glide
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
@@ -99,6 +105,11 @@
 
 # Keep domain models that might be used with reflection
 -keep class com.smartcommute.feature.linestatus.domain.model.** { *; }
+-keep class com.smartcommute.feature.linedetails.domain.model.** { *; }
+-keep class com.smartcommute.feature.statusalerts.domain.model.** { *; }
+
+# Keep BroadcastReceivers for alarm system
+-keep class com.smartcommute.feature.statusalerts.data.receiver.** { *; }
 
 # Keep custom exceptions
 -keep public class * extends java.lang.Exception
