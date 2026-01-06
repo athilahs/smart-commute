@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SmartCommute</string>
+    <string name="app_name">Smart Commute</string>
 
     <!-- Screen Titles -->
     <string name="tube_status_title">Tube Status</string>
