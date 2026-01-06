@@ -95,11 +95,20 @@ fun StatusAlertsScreen(
         }
     }
 
-    // Re-check exact alarm permission when returning to the app
+    // Re-check permissions when returning to the app
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val callback = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                // Re-check notification permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    hasPermission = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PermissionChecker.PERMISSION_GRANTED
+                }
+
+                // Re-check exact alarm permission
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val alarmManager = context.getSystemService(AlarmManager::class.java)
                     hasExactAlarmPermission = alarmManager?.canScheduleExactAlarms() ?: false
@@ -242,7 +251,8 @@ fun StatusAlertsScreen(
                 is StatusAlertsUiState.Success -> {
                     if (state.alarms.isEmpty()) {
                         EmptyStateView(
-                            hasPermission = hasPermission && hasExactAlarmPermission,
+                            hasNotificationPermission = hasPermission,
+                            hasExactAlarmPermission = hasExactAlarmPermission,
                             onRequestPermission = {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasPermission) {
                                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)

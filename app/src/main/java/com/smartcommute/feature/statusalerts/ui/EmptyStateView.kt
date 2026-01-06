@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun EmptyStateView(
-    hasPermission: Boolean,
+    hasNotificationPermission: Boolean,
+    hasExactAlarmPermission: Boolean,
     onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -27,47 +28,70 @@ fun EmptyStateView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (!hasPermission) {
-            // Permission required state
-            Text(
-                text = "Notification Permission Required",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Status alerts need notification permission to notify you about tube line statuses at scheduled times.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = onRequestPermission) {
-                Text("Grant Permission")
+        when {
+            !hasNotificationPermission -> {
+                // Notification permission required state
+                Text(
+                    text = "Notification Permission Required",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Status alerts need notification permission to notify you about tube line statuses at scheduled times.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onRequestPermission) {
+                    Text("Grant Permission")
+                }
             }
-        } else {
-            // No alarms configured state
-            Text(
-                text = "No Alarms Configured",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Create your first status alert to receive notifications about tube line disruptions at scheduled times.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Tap the + button below to get started",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
+            !hasExactAlarmPermission -> {
+                // Exact alarm permission required state
+                Text(
+                    text = "Alarms & Reminders Permission Required",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Status alerts need permission to schedule exact alarms so they can notify you at the precise time you set.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onRequestPermission) {
+                    Text("Grant Permission")
+                }
+            }
+            else -> {
+                // No alarms configured state
+                Text(
+                    text = "No Alarms Configured",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Create your first status alert to receive notifications about tube line disruptions at scheduled times.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Tap the + button below to get started",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
