@@ -112,7 +112,7 @@ Continued use of the App after changes constitutes acceptance of the updated pol
 
 SmartCommute is open source software. You can review the code to verify these privacy practices at:
 
-[GitHub Repository URL]
+https://github.com/athilahs/smart-commute
 
 ## Contact
 
