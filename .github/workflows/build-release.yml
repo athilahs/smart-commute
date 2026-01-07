@@ -6,19 +6,92 @@ on:
       - 'v*.*.*'  # Triggers on version tags like v1.0.0
   workflow_dispatch:  # Allows manual trigger
     inputs:
-      version_name:
-        description: 'Version name (e.g., 1.0.0)'
+      bump_type:
+        description: 'Version bump type'
         required: true
-        default: '1.0.0'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+      upload_to_play_store:
+        description: 'Upload to Google Play?'
+        required: true
+        type: boolean
+        default: false
+      play_store_track:
+        description: 'Google Play track (internal/alpha/beta/production)'
+        required: true
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+        default: 'internal'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: Prod
+    outputs:
+      version_name: ${{ steps.bump_version.outputs.version_name }}
+      version_code: ${{ steps.bump_version.outputs.version_code }}
+      old_version_name: ${{ steps.bump_version.outputs.old_version_name }}
+      old_version_code: ${{ steps.bump_version.outputs.old_version_code }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Bump version
+      id: bump_version
+      run: |
+        # Read current versions
+        VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+        VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+
+        echo "old_version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+        echo "old_version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+
+        # Calculate new version code (always increment)
+        NEW_VERSION_CODE=$((VERSION_CODE + 1))
+
+        # Calculate new version name based on bump type (only for workflow_dispatch)
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
+
+          case "${{ inputs.bump_type }}" in
+            major)
+              NEW_VERSION_NAME="$((MAJOR + 1)).0.0"
+              ;;
+            minor)
+              NEW_VERSION_NAME="${MAJOR}.$((MINOR + 1)).0"
+              ;;
+            patch)
+              NEW_VERSION_NAME="${MAJOR}.${MINOR}.$((PATCH + 1))"
+              ;;
+          esac
+        else
+          # For tag pushes, extract version from tag
+          NEW_VERSION_NAME="${GITHUB_REF#refs/tags/v}"
+        fi
+
+        echo "version_code=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+        echo "version_name=$NEW_VERSION_NAME" >> $GITHUB_OUTPUT
+
+        echo "Bumping version from $VERSION_NAME ($VERSION_CODE) to $NEW_VERSION_NAME ($NEW_VERSION_CODE)"
+
+        # Update build.gradle.kts
+        sed -i "s/versionCode = $VERSION_CODE/versionCode = $NEW_VERSION_CODE/" app/build.gradle.kts
+        sed -i "s/versionName = \"$VERSION_NAME\"/versionName = \"$NEW_VERSION_NAME\"/" app/build.gradle.kts
+
+        # Show the changes
+        git diff app/build.gradle.kts
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -106,3 +179,88 @@ jobs:
       run: |
         rm -f smartcommute-release.keystore
         echo "Keystore file removed"
+
+  deploy:
+    name: Deploy to Google Play
+    needs: build
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.upload_to_play_store) ||
+      startsWith(github.ref, 'refs/tags/')
+    environment: Prod
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Download AAB artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: app-release-aab
+
+    - name: Upload to Google Play
+      id: upload
+      uses: r0adkll/upload-google-play@v1.1.3
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        packageName: com.smartcommute
+        releaseFiles: app-release.aab
+        track: ${{ github.event.inputs.play_store_track || 'internal' }}
+        status: completed
+        inAppUpdatePriority: 2
+        whatsNewDirectory: distribution/whatsnew
+
+    - name: Commit and push version bump
+      if: success()
+      run: |
+        # Configure git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Apply version changes
+        VERSION_CODE="${{ needs.build.outputs.version_code }}"
+        VERSION_NAME="${{ needs.build.outputs.version_name }}"
+        OLD_VERSION_CODE="${{ needs.build.outputs.old_version_code }}"
+        OLD_VERSION_NAME="${{ needs.build.outputs.old_version_name }}"
+
+        # Update build.gradle.kts
+        sed -i "s/versionCode = $OLD_VERSION_CODE/versionCode = $VERSION_CODE/" app/build.gradle.kts
+        sed -i "s/versionName = \"$OLD_VERSION_NAME\"/versionName = \"$VERSION_NAME\"/" app/build.gradle.kts
+
+        # Commit changes
+        git add app/build.gradle.kts
+        git commit -m "Bump version to $VERSION_NAME ($VERSION_CODE)
+
+        Released to Google Play ${{ github.event.inputs.play_store_track || 'internal' }} track
+
+        🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+        Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+        # Push changes
+        git push origin main
+
+        # Create and push tag if not already exists
+        TAG_NAME="v${VERSION_NAME}"
+        if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+          git tag -a "$TAG_NAME" -m "Release $VERSION_NAME
+
+          Released to Google Play ${{ github.event.inputs.play_store_track || 'internal' }} track
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+          git push origin "$TAG_NAME"
+          echo "Created and pushed tag: $TAG_NAME"
+        else
+          echo "Tag $TAG_NAME already exists, skipping tag creation"
+        fi
+
+        echo "Version bump committed and pushed successfully"
+
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "::error::Deployment to Google Play failed. Version changes were NOT committed."
+        echo "Version would have been: ${{ needs.build.outputs.version_name }} (${{ needs.build.outputs.version_code }})"
