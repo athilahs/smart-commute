@@ -55,6 +55,10 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+            // Generate native debug symbols for crash analysis
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
         debug {
             isMinifyEnabled = false
