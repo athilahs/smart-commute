@@ -29,8 +29,9 @@ jobs:
 
     - name: Decode and save keystore
       run: |
-        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > smartcommute-release.keystore
+        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | tr -d '\n\r' | base64 --decode > smartcommute-release.keystore
         echo "Keystore file created"
+        ls -lh smartcommute-release.keystore
 
     - name: Create local.properties
       run: |
