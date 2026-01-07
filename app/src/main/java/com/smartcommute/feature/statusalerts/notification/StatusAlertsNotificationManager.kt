@@ -1,5 +1,6 @@
 package com.smartcommute.feature.statusalerts.notification
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager as AndroidNotificationManager
 import android.app.PendingIntent
@@ -45,6 +46,7 @@ class StatusAlertsNotificationManager @Inject constructor(
      * @param lines List of tube lines with their current status
      * @param isSilent If true, use silent channel; otherwise use audible based on status
      */
+    @SuppressLint("MissingPermission")
     fun sendStatusNotification(
         alarmId: String,
         lines: List<TubeLineStatus>,
@@ -128,6 +130,7 @@ class StatusAlertsNotificationManager @Inject constructor(
      * @param alarmId ID of the alarm that triggered
      * @param lineNames List of tube line names that failed to fetch
      */
+    @SuppressLint("MissingPermission")
     fun sendErrorNotification(
         alarmId: String,
         lineNames: List<String>
