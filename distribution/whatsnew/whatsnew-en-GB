@@ -1,18 +1,12 @@
-Welcome to SmartCommute! 🚇
+SmartCommute v1.0.2
 
-Your new companion for London Underground travel:
+New:
+• Add ability to supply custom release notes
 
-• Real-time status for all 11 Tube lines
-• Detailed disruption information
-• Smart alerts for your commute times
-• Silent notifications for good service
-• Audible alerts for disruptions
-• Monitor multiple lines per alarm
-• Beautiful Material Design 3 interface
-• No ads, no tracking, completely free
-
-Requirements: Android 8.0+
+Fixed:
+• Fix custom release notes linebreaks
+• Fix tfl icon distortion
 
 Questions or feedback? Leave a review or contact us!
 
-Happy commuting! 🎉
+Happy commuting! 🚇
