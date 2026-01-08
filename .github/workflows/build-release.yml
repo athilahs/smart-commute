@@ -105,7 +105,8 @@ jobs:
 
         if [ -n "$CUSTOM_NOTES" ]; then
           echo "Using custom release notes provided by user"
-          echo "$CUSTOM_NOTES" > distribution/whatsnew/whatsnew-en-GB
+          # Use printf to properly handle newlines and escape sequences
+          printf '%b\n' "$CUSTOM_NOTES" > distribution/whatsnew/whatsnew-en-GB
         else
           echo "Auto-generating release notes from commits"
           # Make script executable
