@@ -15,6 +15,11 @@ on:
           - minor
           - major
         default: 'patch'
+      custom_release_notes:
+        description: 'Custom release notes (leave empty to auto-generate from commits)'
+        required: false
+        type: string
+        default: ''
       upload_to_play_store:
         description: 'Upload to Google Play?'
         required: true
@@ -95,14 +100,31 @@ jobs:
 
     - name: Generate release notes
       run: |
-        # Make script executable
-        chmod +x .github/scripts/generate_release_notes.py
+        # Check if custom release notes were provided
+        CUSTOM_NOTES="${{ inputs.custom_release_notes }}"
 
-        # Generate release notes
-        python3 .github/scripts/generate_release_notes.py "${{ steps.bump_version.outputs.version_name }}" > distribution/whatsnew/whatsnew-en-GB
+        if [ -n "$CUSTOM_NOTES" ]; then
+          echo "Using custom release notes provided by user"
+          echo "$CUSTOM_NOTES" > distribution/whatsnew/whatsnew-en-GB
+        else
+          echo "Auto-generating release notes from commits"
+          # Make script executable
+          chmod +x .github/scripts/generate_release_notes.py
 
-        echo "Generated release notes:"
+          # Generate release notes
+          python3 .github/scripts/generate_release_notes.py "${{ steps.bump_version.outputs.version_name }}" > distribution/whatsnew/whatsnew-en-GB
+        fi
+
+        echo "Release notes:"
         cat distribution/whatsnew/whatsnew-en-GB
+
+        # Show character count
+        CHAR_COUNT=$(wc -c < distribution/whatsnew/whatsnew-en-GB | tr -d ' ')
+        echo "Character count: $CHAR_COUNT (max: 500)"
+
+        if [ "$CHAR_COUNT" -gt 500 ]; then
+          echo "::warning::Release notes exceed 500 characters. Google Play may truncate them."
+        fi
 
         # Show diff
         git diff distribution/whatsnew/whatsnew-en-GB
