@@ -1,11 +1,7 @@
 # SmartCommute - London Underground Status & Alerts
 
 <p align="center">
-  <img src="googleplay/ic_launcher_512.png" width="128" height="128" alt="SmartCommute Logo">
-</p>
-
-<p align="center">
-  Real-time London Underground status with smart notifications for your daily commute
+  <img src="googleplay/feature_graphic.png" width="512" height="250" alt="SmartCommute - Real-time London Underground Status & Alerts">
 </p>
 
 <p align="center">
