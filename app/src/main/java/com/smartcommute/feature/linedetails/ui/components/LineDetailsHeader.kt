@@ -77,6 +77,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                 )
 
                 // Dark gradient scrim for text readability
+                val scrimEndColor = getLineGradientEndColor(lineId)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -84,8 +85,8 @@ fun SharedTransitionScope.LineDetailsHeader(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.7f)
+                                    Color.Black.copy(alpha = 0.6f),
+                                    scrimEndColor.copy(alpha = 0.3f)
                                 ),
                                 startY = 0f,
                                 endY = Float.POSITIVE_INFINITY
@@ -144,7 +145,7 @@ fun SharedTransitionScope.LineDetailsHeader(
                     .size(iconSize)
                     .alpha(contentAlpha)
                     .clip(CircleShape)
-                    .background(lineColor.copy(alpha = 0.30f))
+                    .background(lineColor.copy(alpha = 0.50f))
                     .sharedElement(
                         rememberSharedContentState(key = "line_icon_$lineId"),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -182,16 +183,16 @@ private fun getLineGradient(lineId: String): Brush {
             colors = listOf(Color(0xFFDC241F), Color(0xFFE85C56), Color.White)
         )
         "circle" -> Brush.linearGradient(
-            colors = listOf(Color(0xFFFFD329), Color(0xFFE6BE24), Color(0xFFFFD329))
+            colors = listOf(Color(0xFFFFD329), Color(0xFFE6BE24), Color.Black)
         )
         "district" -> Brush.linearGradient(
             colors = listOf(Color(0xFF007D32), Color(0xFF33A35C), Color.White)
         )
         "hammersmithcity", "hammersmith&city" -> Brush.linearGradient(
-            colors = listOf(Color(0xFFF491A8), Color(0xFFE17A91), Color(0xFFF491A8))
+            colors = listOf(Color(0xFFF491A8), Color(0xFFE17A91), Color.Black)
         )
         "jubilee" -> Brush.linearGradient(
-            colors = listOf(Color(0xFFA1A5A7), Color(0xFF8A8E90), Color(0xFFA1A5A7))
+            colors = listOf(Color(0xFFA1A5A7), Color(0xFF8A8E90), Color.Black)
         )
         "metropolitan" -> Brush.linearGradient(
             colors = listOf(Color(0xFF9B0058), Color(0xFFC03380), Color.White)
@@ -206,10 +207,31 @@ private fun getLineGradient(lineId: String): Brush {
             colors = listOf(Color(0xFF0098D8), Color(0xFF33B3E6), Color.White)
         )
         "waterloocity", "waterloo&city" -> Brush.linearGradient(
-            colors = listOf(Color(0xFF93CEBA), Color(0xFF7AB9A6), Color(0xFF93CEBA))
+            colors = listOf(Color(0xFF93CEBA), Color(0xFF7AB9A6), Color.Black)
         )
         else -> Brush.linearGradient(
-            colors = listOf(Color(0xFF808080), Color(0xFF606060), Color(0xFF808080))
+            colors = listOf(Color(0xFF808080), Color(0xFF606060), Color.White)
         )
+    }
+}
+
+@Composable
+private fun getLineGradientEndColor(lineId: String): Color {
+    // Normalize the line ID
+    val normalizedId = lineId.lowercase().replace("-", "").replace(" ", "")
+
+    return when (normalizedId) {
+        "bakerloo" -> Color.White
+        "central" -> Color.White
+        "circle" -> Color(0xFFFFD329)
+        "district" -> Color.White
+        "hammersmithcity", "hammersmith&city" -> Color(0xFFF491A8)
+        "jubilee" -> Color(0xFFA1A5A7)
+        "metropolitan" -> Color.White
+        "northern" -> Color.White
+        "piccadilly" -> Color.White
+        "victoria" -> Color.White
+        "waterloocity", "waterloo&city" -> Color(0xFF93CEBA)
+        else -> Color(0xFF808080)
     }
 }

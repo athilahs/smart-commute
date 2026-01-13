@@ -46,7 +46,6 @@
 - 🎬 Smooth animations and transitions
 - 👀 Comfortable viewing experience
 - 🧭 Intuitive navigation
-- 🌙 Dark mode ready (coming soon)
 
 ### 🔒 Privacy First
 - 🚫 No personal data collection

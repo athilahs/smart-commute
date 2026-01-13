@@ -6,10 +6,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,19 +46,14 @@ fun SharedTransitionScope.LineStatusItem(
     val statusText = stringResource(id = statusTextResId)
     val contentDesc = stringResource(id = R.string.cd_line_status, line.name, statusText)
 
-    Card(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .semantics { contentDescription = contentDesc },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = onClick
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = contentDesc }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
             // TfL roundel icon with line color - shared element
             Box(
                 modifier = Modifier
@@ -127,8 +121,7 @@ fun SharedTransitionScope.LineStatusItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Status indicator
-            StatusIndicator(statusType = line.status.type)
-        }
+        // Status indicator
+        StatusIndicator(statusType = line.status.type)
     }
 }

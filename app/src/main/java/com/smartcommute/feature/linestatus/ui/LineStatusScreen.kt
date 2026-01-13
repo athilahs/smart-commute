@@ -171,11 +171,12 @@ private fun SharedTransitionScope.LineStatusList(
     onLineClick: (String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(lines) { line ->
+        items(
+            items = lines,
+            key = { line -> line.id }
+        ) { line ->
             val lineColor = getLineColor(line.id)
             LineStatusItem(
                 line = line,
@@ -183,6 +184,11 @@ private fun SharedTransitionScope.LineStatusList(
                 animatedVisibilityScope = animatedVisibilityScope,
                 onClick = { onLineClick(line.id) }
             )
+            if (line != lines.last()) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
         }
     }
 }
