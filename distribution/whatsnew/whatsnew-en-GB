@@ -1,11 +1,11 @@
-SmartCommute v1.0.2
+SmartCommute v1.0.3
 
 New:
-• Add ability to supply custom release notes
+• Use feature graphic in README instead of icon
+• Add MIT License
 
-Fixed:
-• Fix custom release notes linebreaks
-• Fix tfl icon distortion
+Improved:
+• Enhance UI design with cleaner status list and improved l...
 
 Questions or feedback? Leave a review or contact us!
 
