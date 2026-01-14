@@ -1,14 +1,21 @@
 package com.smartcommute.feature.statusalerts.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import com.smartcommute.R
 import com.smartcommute.core.network.NetworkResult
+import com.smartcommute.core.ui.theme.*
 import com.smartcommute.feature.linestatus.domain.model.UndergroundLine
 import com.smartcommute.feature.linestatus.domain.repository.LineStatusRepository
 import kotlinx.coroutines.flow.Flow
@@ -103,6 +110,8 @@ private fun TubeLineCheckboxItem(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lineColor = getLineColor(line.id)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -113,12 +122,48 @@ private fun TubeLineCheckboxItem(
             checked = isSelected,
             onCheckedChange = onCheckedChange
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // TfL roundel icon with line color
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(lineColor.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_tfl_roundel),
+                contentDescription = null,
+                tint = lineColor,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = line.name,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+@Composable
+private fun getLineColor(lineId: String): Color {
+    return when (lineId.lowercase()) {
+        "bakerloo" -> line_bakerloo
+        "central" -> line_central
+        "circle" -> line_circle
+        "district" -> line_district
+        "hammersmith-city" -> line_hammersmith_city
+        "jubilee" -> line_jubilee
+        "metropolitan" -> line_metropolitan
+        "northern" -> line_northern
+        "piccadilly" -> line_piccadilly
+        "victoria" -> line_victoria
+        "waterloo-city" -> line_waterloo_city
+        else -> Color.Gray
     }
 }
 
