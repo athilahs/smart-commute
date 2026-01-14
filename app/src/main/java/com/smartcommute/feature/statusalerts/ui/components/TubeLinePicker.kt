@@ -1,8 +1,6 @@
 package com.smartcommute.feature.statusalerts.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,12 +56,10 @@ fun TubeLinePicker(
                         )
                     }
                 } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.lines) { line ->
+                        state.lines.forEach { line ->
                             TubeLineCheckboxItem(
                                 line = line,
                                 isSelected = selectedLineIds.contains(line.id),
