@@ -1,11 +1,15 @@
-SmartCommute v1.0.3
+SmartCommute v1.0.4
 
 New:
-• Use feature graphic in README instead of icon
-• Add MIT License
+• Add line icons to tube line picker in alarm bottom sheet
+• Add centered drag handle to bottom sheet
+
+Fixed:
+• Remove problematic offset-based dismissal check
+• Allow bottom sheet dismissal only with significant drag
 
 Improved:
-• Enhance UI design with cleaner status list and improved l...
+• Cleaner line details with service hours and disruption ti...
 
 Questions or feedback? Leave a review or contact us!
 
