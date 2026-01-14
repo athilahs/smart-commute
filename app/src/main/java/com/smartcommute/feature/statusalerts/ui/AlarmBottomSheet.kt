@@ -28,11 +28,22 @@ fun AlarmBottomSheet(
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
 
+    // Track the last known offset to determine if user dragged significantly
+    var lastDragOffset by remember { mutableStateOf(0f) }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { targetValue ->
-            // Prevent dismissal via drag - only allow via back press or clicking outside
-            targetValue != SheetValue.Hidden
+            when (targetValue) {
+                SheetValue.Hidden -> {
+                    // Only allow dismissal if the sheet has been dragged down significantly
+                    // The requireOffset returns negative values, so we check if it's less than -50% of screen
+                    val currentOffset = sheetState.requireOffset()
+                    val shouldDismiss = currentOffset < -500f // Require dragging down at least 500 pixels
+                    shouldDismiss
+                }
+                else -> true
+            }
         }
     )
 
