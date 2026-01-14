@@ -10,19 +10,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.smartcommute.feature.linedetails.domain.model.Crowding
-import com.smartcommute.feature.linedetails.domain.model.CrowdingLevel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,31 +27,22 @@ import java.util.Locale
 @Composable
 fun CrowdingCard(
     crowding: Crowding,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showDivider: Boolean = true
 ) {
-    val (backgroundColor, textColor) = when (crowding.level) {
-        CrowdingLevel.QUIET -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
-        CrowdingLevel.MODERATE -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-        CrowdingLevel.BUSY -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-        CrowdingLevel.VERY_BUSY -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-    }
-
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        )
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.People,
                 contentDescription = null,
-                tint = textColor,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp)
             )
 
@@ -64,13 +52,13 @@ fun CrowdingCard(
                 Text(
                     text = "Crowding Level",
                     style = MaterialTheme.typography.labelMedium,
-                    color = textColor
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = crowding.level.label,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = textColor
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -79,13 +67,13 @@ fun CrowdingCard(
                 Text(
                     text = "Measured: ${dateFormat.format(Date(crowding.measurementTime))}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = textColor
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = "Source: ${crowding.dataSource}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = textColor
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (!crowding.notes.isNullOrBlank()) {
@@ -93,10 +81,13 @@ fun CrowdingCard(
                     Text(
                         text = crowding.notes,
                         style = MaterialTheme.typography.bodySmall,
-                        color = textColor
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
+        }
+        if (showDivider) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
     }
 }

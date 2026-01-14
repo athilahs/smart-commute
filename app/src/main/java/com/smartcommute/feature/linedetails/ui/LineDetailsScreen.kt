@@ -57,6 +57,7 @@ import com.smartcommute.feature.linedetails.ui.components.DisruptionCard
 import com.smartcommute.feature.linedetails.ui.components.EmptyStateCard
 import com.smartcommute.feature.linedetails.ui.components.ErrorState
 import com.smartcommute.feature.linedetails.ui.components.LineDetailsHeader
+import com.smartcommute.feature.linedetails.ui.components.LineInfoCard
 import com.smartcommute.feature.linedetails.ui.components.LoadingState
 import com.smartcommute.feature.linedetails.ui.components.StatusSummaryCard
 import kotlinx.coroutines.delay
@@ -123,8 +124,7 @@ fun SharedTransitionScope.LineDetailsScreen(
                         LazyColumn(
                             state = listState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding())
                         ) {
                         // Header with image, icon, name, and status with shared element transitions
                         item {
@@ -182,51 +182,60 @@ fun SharedTransitionScope.LineDetailsScreen(
                             ) {
                                 StatusSummaryCard(
                                     status = lineDetails.status,
-                                    lastUpdated = lineDetails.lastUpdated,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                    lastUpdated = lineDetails.lastUpdated
                                 )
                             }
                         }
 
-                        // Disruptions Section
+                        // Line Info Card (Service Hours)
+                        item {
+                            AnimatedVisibility(
+                                visible = itemsVisible >= 2,
+                                enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                                        slideInVertically(
+                                            animationSpec = tween(durationMillis = 400),
+                                            initialOffsetY = { it / 3 }
+                                        )
+                            ) {
+                                // Determine if this is the last item
+                                val isLastItem = lineDetails.disruptions.isEmpty() &&
+                                                lineDetails.closures.isEmpty() &&
+                                                lineDetails.crowding == null
+                                LineInfoCard(
+                                    lineId = lineDetails.id,
+                                    showDivider = !isLastItem
+                                )
+                            }
+                        }
+
+                        // Disruptions Section - only show if there are disruptions
                         if (lineDetails.disruptions.isNotEmpty()) {
                             itemsIndexed(lineDetails.disruptions) { index, disruption ->
                                 AnimatedVisibility(
-                                    visible = itemsVisible >= (2 + index),
+                                    visible = itemsVisible >= (3 + index),
                                     enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
                                             slideInVertically(
                                                 animationSpec = tween(durationMillis = 400),
                                                 initialOffsetY = { it / 3 }
                                             )
                                 ) {
+                                    // Determine if this is the last disruption and there are no closures/crowding after
+                                    val isLastDisruption = index == lineDetails.disruptions.lastIndex
+                                    val isLastItem = isLastDisruption &&
+                                                    lineDetails.closures.isEmpty() &&
+                                                    lineDetails.crowding == null
                                     DisruptionCard(
                                         disruption = disruption,
                                         isExpanded = state.expandedDisruptions.contains(disruption.id),
                                         onToggleExpand = { viewModel.toggleDisruptionExpansion(disruption.id) },
-                                        modifier = Modifier.padding(horizontal = 16.dp)
-                                    )
-                                }
-                            }
-                        } else {
-                            item {
-                                AnimatedVisibility(
-                                    visible = itemsVisible >= 2,
-                                    enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
-                                            slideInVertically(
-                                                animationSpec = tween(durationMillis = 400),
-                                                initialOffsetY = { it / 3 }
-                                            )
-                                ) {
-                                    EmptyStateCard(
-                                        message = stringResource(R.string.empty_state_no_disruptions),
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                        showDivider = !isLastItem
                                     )
                                 }
                             }
                         }
 
-                        // Closures Section
-                        val closuresStartIndex = 2 + lineDetails.disruptions.size
+                        // Closures Section - only show if there are closures
+                        val closuresStartIndex = 3 + lineDetails.disruptions.size
                         if (lineDetails.closures.isNotEmpty()) {
                             itemsIndexed(lineDetails.closures) { index, closure ->
                                 AnimatedVisibility(
@@ -237,52 +246,35 @@ fun SharedTransitionScope.LineDetailsScreen(
                                                 initialOffsetY = { it / 3 }
                                             )
                                 ) {
+                                    // Determine if this is the last closure and there's no crowding after
+                                    val isLastClosure = index == lineDetails.closures.lastIndex
+                                    val isLastItem = isLastClosure && lineDetails.crowding == null
                                     ClosureCard(
                                         closure = closure,
                                         isExpanded = state.expandedClosures.contains(closure.id),
                                         onToggleExpand = { viewModel.toggleClosureExpansion(closure.id) },
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                        showDivider = !isLastItem
                                     )
                                 }
                             }
-                        } else {
+                        }
+
+                        // Crowding Section - only show if there is crowding data
+                        val crowdingIndex = closuresStartIndex + lineDetails.closures.size
+                        if (lineDetails.crowding != null) {
                             item {
                                 AnimatedVisibility(
-                                    visible = itemsVisible >= closuresStartIndex,
+                                    visible = itemsVisible >= crowdingIndex,
                                     enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
                                             slideInVertically(
                                                 animationSpec = tween(durationMillis = 400),
                                                 initialOffsetY = { it / 3 }
                                             )
                                 ) {
-                                    EmptyStateCard(
-                                        message = stringResource(R.string.empty_state_no_closures),
-                                        modifier = Modifier.padding(horizontal = 16.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        // Crowding Section
-                        val crowdingIndex = closuresStartIndex + lineDetails.closures.size
-                        item {
-                            AnimatedVisibility(
-                                visible = itemsVisible >= crowdingIndex,
-                                enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
-                                        slideInVertically(
-                                            animationSpec = tween(durationMillis = 400),
-                                            initialOffsetY = { it / 3 }
-                                        )
-                            ) {
-                                if (lineDetails.crowding != null) {
+                                    // Crowding is always the last item if it exists
                                     CrowdingCard(
                                         crowding = lineDetails.crowding,
-                                        modifier = Modifier.padding(horizontal = 16.dp)
-                                    )
-                                } else {
-                                    EmptyStateCard(
-                                        message = stringResource(R.string.empty_state_no_crowding),
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                        showDivider = false
                                     )
                                 }
                             }

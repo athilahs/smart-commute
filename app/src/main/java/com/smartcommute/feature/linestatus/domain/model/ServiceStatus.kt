@@ -12,5 +12,6 @@ enum class StatusType {
 data class ServiceStatus(
     val type: StatusType,
     val description: String = "",
-    val severity: Int = 0
+    val severity: Int = 0,
+    val validUntil: Long? = null
 )

@@ -94,9 +94,20 @@ private fun LineStatusResponseDto.toServiceStatus(): ServiceStatus {
         else -> StatusType.SERVICE_DISRUPTION
     }
 
+    // Parse validity period to get the "valid until" timestamp
+    val validUntil = validityPeriods?.firstOrNull()?.toDate?.let { dateStr ->
+        try {
+            // TfL uses ISO 8601 format: yyyy-MM-dd'T'HH:mm:ss
+            java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US).parse(dateStr)?.time
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     return ServiceStatus(
         type = type,
         description = reason ?: statusSeverityDescription,
-        severity = statusSeverity
+        severity = statusSeverity,
+        validUntil = validUntil
     )
 }
