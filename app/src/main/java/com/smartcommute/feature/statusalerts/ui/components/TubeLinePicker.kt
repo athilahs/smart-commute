@@ -127,7 +127,7 @@ private fun TubeLineCheckboxItem(
         // TfL roundel icon with line color
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(32.dp)
                 .clip(CircleShape)
                 .background(lineColor.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
@@ -136,7 +136,7 @@ private fun TubeLineCheckboxItem(
                 painter = painterResource(id = R.drawable.ic_tfl_roundel),
                 contentDescription = null,
                 tint = lineColor,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(18.dp)
             )
         }
 
