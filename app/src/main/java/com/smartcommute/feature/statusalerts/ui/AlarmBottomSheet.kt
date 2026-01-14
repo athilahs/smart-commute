@@ -29,17 +29,13 @@ fun AlarmBottomSheet(
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
+        skipPartiallyExpanded = true
     )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        dragHandle = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                BottomSheetDefaults.DragHandle()
-            }
-        },
+        dragHandle = null,
         modifier = modifier
     ) {
         LazyColumn(
