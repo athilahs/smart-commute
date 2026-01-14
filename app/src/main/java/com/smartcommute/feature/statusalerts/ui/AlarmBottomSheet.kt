@@ -28,8 +28,13 @@ fun AlarmBottomSheet(
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
+        skipPartiallyExpanded = false
     )
+
+    // Expand to full height on initial composition
+    LaunchedEffect(Unit) {
+        sheetState.expand()
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
