@@ -27,14 +27,14 @@ fun AlarmBottomSheet(
     modifier: Modifier = Modifier
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
-    )
 
-    // Expand to full height on initial composition
-    LaunchedEffect(Unit) {
-        sheetState.expand()
-    }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { targetValue ->
+            // Prevent dismissal via drag - only allow via back press or clicking outside
+            targetValue != SheetValue.Hidden
+        }
+    )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
