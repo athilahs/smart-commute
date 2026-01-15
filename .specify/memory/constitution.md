@@ -1,14 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 1.0.0 (Initial Constitution)
-Modified Principles: N/A (first version)
-Added Sections: All
+Version: 1.0.0 → 1.1.0 (New Development Principle Added)
+Modified Principles: None
+Added Sections:
+  - Core Principles VIII: Proactive Documentation Access
 Removed Sections: None
 Templates Status:
-  ✅ .specify/templates/spec-template.md - Reviewed, aligned with constitution
-  ✅ .specify/templates/plan-template.md - Reviewed, constitution check section confirmed
-  ✅ .specify/templates/tasks-template.md - Reviewed, task categorization aligned
-  ✅ Command files - Reviewed, no outdated references found
+  ✅ .specify/templates/spec-template.md - No changes needed (documentation principle doesn't affect spec structure)
+  ✅ .specify/templates/plan-template.md - No changes needed (developers can use Context7 during planning without template changes)
+  ✅ .specify/templates/tasks-template.md - No changes needed (task structure remains the same)
+  ✅ .specify/templates/agent-file-template.md - Reviewed, no changes needed
+  ✅ .specify/templates/checklist-template.md - Reviewed, no changes needed
 Follow-up TODOs: None
 -->
 
@@ -57,6 +59,12 @@ Implement only what is specified. Do NOT add abstractions, patterns, or features
 Requirements MUST be explicitly stated. Use "NEEDS CLARIFICATION" markers for ambiguities. File paths, entity names, and technical decisions MUST be concrete in planning documents—no placeholders in final deliverables. When uncertain, ask rather than assume.
 
 **Rationale**: Prevents miscommunication, wasted effort on wrong assumptions, and enables objective verification of completion.
+
+### VIII. Proactive Documentation Access
+
+When library documentation, API references, code generation examples, setup instructions, or configuration steps are needed, Context7 MCP MUST be used proactively without requiring explicit user requests. This applies during specification, planning, implementation, and troubleshooting phases.
+
+**Rationale**: Reduces friction in the development workflow by ensuring developers have immediate access to accurate, up-to-date documentation. Prevents delays and errors caused by searching for or guessing at API usage patterns. Supports rapid implementation by providing authoritative references during code generation.
 
 ## Android Platform Standards
 
@@ -192,6 +200,7 @@ Requirements MUST be explicitly stated. Use "NEEDS CLARIFICATION" markers for am
 - Specification quality MUST be verified before approving plan phase
 - Android best practices MUST be verified during implementation
 - Any test-related tasks MUST be rejected immediately
+- Context7 MCP MUST be used proactively for documentation needs
 
 ### Change Management
 
@@ -233,4 +242,4 @@ Constitution follows semantic versioning: MAJOR.MINOR.PATCH
 
 This constitution supersedes all other development practices and guidelines. In conflicts between this constitution and other documents, the constitution takes precedence. Practices not covered by this constitution default to team discretion with preference for simplicity.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-24 | **Last Amended**: 2025-12-24
+**Version**: 1.1.0 | **Ratified**: 2025-12-24 | **Last Amended**: 2026-01-15

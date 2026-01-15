@@ -32,4 +32,6 @@ Kotlin 1.9+: Follow standard conventions
 - 001-tube-status-screen: Added Kotlin 1.9+ + Jetpack Compose, Hilt, Retrofit, Room, Kotlin Coroutines, Kotlin Flow, Glide, Material Design 3
 
 <!-- MANUAL ADDITIONS START -->
+## Development Rules
+- Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 <!-- MANUAL ADDITIONS END -->
