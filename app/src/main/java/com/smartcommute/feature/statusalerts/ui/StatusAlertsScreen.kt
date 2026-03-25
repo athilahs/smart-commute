@@ -23,10 +23,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.smartcommute.core.analytics.StatusAlertsAnalytics
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusAlertsScreen(
+    analytics: StatusAlertsAnalytics? = null,
     viewModel: StatusAlertsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -70,8 +72,10 @@ fun StatusAlertsScreen(
     ) { isGranted ->
         hasPermission = isGranted
         if (!isGranted) {
+            analytics?.logPermissionDenied("notification")
             showPermissionDeniedDialog = true
         } else {
+            analytics?.logPermissionGranted("notification")
             // After granting notification permission, check exact alarm permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -85,6 +89,7 @@ fun StatusAlertsScreen(
     // Request permission on first composition if needed
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasPermission) {
+            analytics?.logPermissionRequested("notification")
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // If notification permission is already granted, check exact alarm permission
@@ -226,6 +231,7 @@ fun StatusAlertsScreen(
                 if (successState.canCreateMore) {
                     FloatingActionButton(
                         onClick = {
+                            viewModel.onCreateAlarmTapped(successState.alarmCount)
                             alarmConfiguration = AlarmConfigurationState()
                             showBottomSheet = true
                         }

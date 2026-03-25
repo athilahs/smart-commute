@@ -8,7 +8,8 @@ sealed class LineStatusUiState {
         val lines: List<UndergroundLine>,
         val lastUpdated: Long? = null,
         val isOffline: Boolean = false,
-        val isRefreshing: Boolean = false
+        val isRefreshing: Boolean = false,
+        val refreshTrigger: String? = null
     ) : LineStatusUiState()
     data class Error(
         val message: String,

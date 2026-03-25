@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -153,7 +154,7 @@ fun SharedTransitionScope.LineDetailsHeader(
 
         // Last updated timestamp
         Text(
-            text = "Last updated: $formattedDate",
+            text = stringResource(R.string.format_last_updated, formattedDate),
             fontSize = 14.sp,
             color = TextSecondary
         )

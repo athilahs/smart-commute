@@ -9,6 +9,7 @@ data class UndergroundLineDetails(
     val status: ServiceStatus,
     val brandColor: String,
     val lastUpdated: Long,
+    val hasNightTube: Boolean = false,
     val disruptions: List<Disruption>,
     val closures: List<Closure>,
     val crowding: Crowding?

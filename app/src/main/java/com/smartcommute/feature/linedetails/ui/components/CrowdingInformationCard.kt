@@ -19,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.smartcommute.R
 import com.smartcommute.feature.linedetails.domain.model.Crowding
 import com.smartcommute.feature.linedetails.domain.model.CrowdingLevel
 
@@ -34,11 +36,13 @@ fun CrowdingInformationCard(
     crowding: Crowding,
     modifier: Modifier = Modifier
 ) {
+    val title = stringResource(R.string.card_crowding_information)
+
     val offPeakDescription = when (crowding.level) {
-        CrowdingLevel.QUIET -> "Quiet throughout the day"
-        CrowdingLevel.MODERATE -> "Moderate throughout the day"
-        CrowdingLevel.BUSY -> "Busy throughout the day"
-        CrowdingLevel.VERY_BUSY -> "Very busy throughout the day"
+        CrowdingLevel.QUIET -> stringResource(R.string.crowding_offpeak_quiet)
+        CrowdingLevel.MODERATE -> stringResource(R.string.crowding_offpeak_moderate)
+        CrowdingLevel.BUSY -> stringResource(R.string.crowding_offpeak_busy)
+        CrowdingLevel.VERY_BUSY -> stringResource(R.string.crowding_offpeak_very_busy)
     }
 
     Surface(
@@ -50,17 +54,16 @@ fun CrowdingInformationCard(
         Column(
             modifier = Modifier.padding(24.dp)
         ) {
-            // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Outlined.Groups,
-                    contentDescription = "Crowding Information",
+                    contentDescription = title,
                     modifier = Modifier.size(20.dp),
                     tint = ValueColor
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Crowding Information",
+                    text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = ValueColor
@@ -69,24 +72,22 @@ fun CrowdingInformationCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Peak Times
             Text(
-                text = "Peak Times",
+                text = stringResource(R.string.label_peak_times),
                 fontSize = 16.sp,
                 color = LabelColor
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Very busy 08:00-09:30, 17:00-18:30",
+                text = stringResource(R.string.crowding_peak_description),
                 fontSize = 14.sp,
                 color = ValueColor
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Off-Peak
             Text(
-                text = "Off-Peak",
+                text = stringResource(R.string.label_off_peak),
                 fontSize = 16.sp,
                 color = LabelColor
             )

@@ -4,5 +4,6 @@ data class UndergroundLine(
     val id: String,
     val name: String,
     val modeName: String,
-    val status: ServiceStatus
+    val status: ServiceStatus,
+    val hasNightTube: Boolean = false
 )

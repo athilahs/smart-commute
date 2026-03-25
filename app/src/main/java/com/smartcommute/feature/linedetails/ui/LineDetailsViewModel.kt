@@ -3,6 +3,7 @@ package com.smartcommute.feature.linedetails.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.smartcommute.core.analytics.LineDetailsAnalytics
 import com.smartcommute.feature.linedetails.domain.repository.LineDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LineDetailsViewModel @Inject constructor(
     private val repository: LineDetailsRepository,
+    private val analytics: LineDetailsAnalytics,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,8 +36,16 @@ class LineDetailsViewModel @Inject constructor(
 
             repository.getLineDetails(lineId).collect { lineDetails ->
                 _uiState.value = if (lineDetails != null) {
+                    analytics.logLoaded(
+                        lineId = lineDetails.id,
+                        lineName = lineDetails.name,
+                        statusType = lineDetails.status.type.name,
+                        hasCrowding = lineDetails.crowding != null,
+                        hasNightTube = lineDetails.hasNightTube
+                    )
                     LineDetailsUiState.Success(lineDetails)
                 } else {
+                    analytics.logError(lineId, "not_found")
                     LineDetailsUiState.Error("Line details not found. Please refresh the tube status screen first.")
                 }
             }
@@ -69,6 +79,7 @@ class LineDetailsViewModel @Inject constructor(
     }
 
     fun retry() {
+        analytics.logRetryTapped()
         loadLineDetails()
     }
 }

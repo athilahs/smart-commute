@@ -13,6 +13,7 @@ data class TubeLineEntity(
     val statusDescription: String,
     val statusSeverity: Int,
     val brandColor: String = "#000000",
+    val hasNightTube: Boolean = false,
     val lastUpdated: Long,
     val cacheExpiry: Long = lastUpdated + 600000L // 10 minutes default
 )

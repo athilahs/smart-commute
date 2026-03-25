@@ -109,7 +109,7 @@ object DatabaseModule {
             LineStatusDatabase::class.java,
             LineStatusDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_1_2, LineStatusDatabase.MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, LineStatusDatabase.MIGRATION_2_3, LineStatusDatabase.MIGRATION_3_4)
             .fallbackToDestructiveMigration()
             .build()
     }

@@ -11,7 +11,14 @@ navigation = "2.9.6"
 material = "1.13.0"
 kotlinx-serialization = "1.9.0"
 
+# Firebase
+firebase-bom = "33.14.0"
+
 [libraries]
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+
 # Compose
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -62,6 +69,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 android-application = { id = "com.android.application", version = "8.13.2" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

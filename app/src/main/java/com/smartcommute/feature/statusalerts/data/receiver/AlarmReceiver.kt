@@ -18,6 +18,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import com.smartcommute.core.analytics.NotificationAnalytics
 import javax.inject.Inject
 
 /**
@@ -38,6 +39,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var notificationManager: StatusAlertsNotificationManager
+
+    @Inject
+    lateinit var analytics: NotificationAnalytics
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -63,6 +67,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val selectedTubeLines = selectedTubeLinesString.split(",").toSet()
         Log.d(TAG, "Alarm $alarmId triggered for lines: $selectedTubeLines")
+
+        // Log alarm_fired (determine if recurring after fetching alarm)
+        scope.launch {
+            val alarmForAnalytics = statusAlertsRepository.getAlarmById(alarmId)
+            analytics.logAlarmFired(
+                alarmId = alarmId,
+                lineCount = selectedTubeLines.size,
+                isRecurring = alarmForAnalytics?.isRecurring ?: false
+            )
+        }
 
         scope.launch {
             try {
@@ -116,6 +130,21 @@ class AlarmReceiver : BroadcastReceiver() {
                         )
                         Log.d(TAG, "Notification sent for alarm $alarmId")
 
+                        // Analytics: alarm result + notification
+                        val disruptedLines = lineStatuses.filter { it.hasDisruption }
+                        analytics.logAlarmResult(
+                            alarmId = alarmId,
+                            disruptedCount = disruptedLines.size,
+                            totalChecked = lineStatuses.size,
+                            linesDisrupted = disruptedLines.joinToString(",") { it.lineId }
+                        )
+                        val channelName = when {
+                            isSilent -> "silent"
+                            hasAnyDisruption -> "urgent"
+                            else -> "default"
+                        }
+                        analytics.logNotificationSent(channelName, disruptedLines.size)
+
                         // Reschedule recurring alarms for next occurrence
                         val alarm = statusAlertsRepository.getAlarmById(alarmId)
                         if (alarm != null && alarm.isRecurring && alarm.isEnabled) {
@@ -132,6 +161,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                     is NetworkResult.Error -> {
                         Log.e(TAG, "API error: ${result.message}")
+                        analytics.logAlarmFetchFailed(alarmId, "api_error")
                         // API error - send error notification
                         val lineNames = selectedTubeLines.toList()
                         notificationManager.sendErrorNotification(alarmId, lineNames)
@@ -144,6 +174,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception in alarm receiver: ${e.message}", e)
+                analytics.logAlarmFetchFailed(alarmId, "exception")
                 // Error fetching data - send error notification
                 val lineNames = selectedTubeLines.toList()
                 notificationManager.sendErrorNotification(alarmId, lineNames)

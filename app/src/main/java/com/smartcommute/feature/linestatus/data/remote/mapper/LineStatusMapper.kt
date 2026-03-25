@@ -27,7 +27,8 @@ fun LineStatusDto.toDomain(): UndergroundLine {
         id = id,
         name = name,
         modeName = modeName,
-        status = serviceStatus
+        status = serviceStatus,
+        hasNightTube = serviceTypes.any { it.name.equals("Night", ignoreCase = true) }
     )
 }
 
@@ -44,6 +45,7 @@ fun UndergroundLine.toEntity(timestamp: Long): TubeLineEntity {
         statusDescription = status.description,
         statusSeverity = status.severity,
         brandColor = "#000000", // Default color, will be updated by UI layer
+        hasNightTube = hasNightTube,
         lastUpdated = timestamp,
         cacheExpiry = timestamp + 600000L // 10 minutes cache
     )
@@ -68,7 +70,8 @@ fun TubeLineEntity.toDomain(): UndergroundLine {
             type = statusType,
             description = statusDescription,
             severity = statusSeverity
-        )
+        ),
+        hasNightTube = hasNightTube
     )
 }
 

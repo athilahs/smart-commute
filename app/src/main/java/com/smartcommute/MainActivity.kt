@@ -9,12 +9,18 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
+import com.smartcommute.core.analytics.AppAnalytics
 import com.smartcommute.core.ui.theme.SmartCommuteTheme
 import com.smartcommute.ui.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var analytics: AppAnalytics
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,7 +51,7 @@ class MainActivity : ComponentActivity() {
             }
 
             SmartCommuteTheme {
-                MainScreen(intent = intent)
+                MainScreen(intent = intent, analytics = analytics)
             }
         }
     }

@@ -10,8 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,7 +30,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.LineStatusScreen(
-    onLineClick: (String) -> Unit = {},
+    onLineClick: (lineId: String, lineName: String, statusType: String) -> Unit = { _, _, _ -> },
     animatedVisibilityScope: AnimatedVisibilityScope,
     @Suppress("DEPRECATION")
     viewModel: LineStatusViewModel = hiltViewModel()
@@ -44,7 +42,7 @@ fun SharedTransitionScope.LineStatusScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.tube_status_title)) },
                 actions = {
-                    IconButton(onClick = { viewModel.refreshLineStatuses() }) {
+                    IconButton(onClick = { viewModel.refreshLineStatuses("button") }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = stringResource(R.string.cd_refresh_status)
@@ -70,7 +68,7 @@ fun SharedTransitionScope.LineStatusScreen(
                 is LineStatusUiState.Success -> {
                     PullToRefreshBox(
                         isRefreshing = state.isRefreshing,
-                        onRefresh = { viewModel.refreshLineStatuses() },
+                        onRefresh = { viewModel.refreshLineStatuses("pull_to_refresh") },
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Column(modifier = Modifier.fillMaxSize()) {
@@ -87,7 +85,10 @@ fun SharedTransitionScope.LineStatusScreen(
                             LineStatusList(
                                 lines = state.lines,
                                 animatedVisibilityScope = animatedVisibilityScope,
-                                onLineClick = onLineClick
+                                onLineClick = { lineId, lineName, statusType ->
+                                    viewModel.onLineSelected(lineId, lineName, statusType)
+                                    onLineClick(lineId, lineName, statusType)
+                                }
                             )
                         }
                     }
@@ -96,7 +97,7 @@ fun SharedTransitionScope.LineStatusScreen(
                     if (state.cachedLines.isNotEmpty()) {
                         PullToRefreshBox(
                             isRefreshing = false,
-                            onRefresh = { viewModel.refreshLineStatuses() },
+                            onRefresh = { viewModel.refreshLineStatuses("pull_to_refresh") },
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Column(modifier = Modifier.fillMaxSize()) {
@@ -111,14 +112,17 @@ fun SharedTransitionScope.LineStatusScreen(
                                 LineStatusList(
                                     lines = state.cachedLines,
                                     animatedVisibilityScope = animatedVisibilityScope,
-                                    onLineClick = onLineClick
+                                    onLineClick = { lineId, lineName, statusType ->
+                                        viewModel.onLineSelected(lineId, lineName, statusType)
+                                        onLineClick(lineId, lineName, statusType)
+                                    }
                                 )
                             }
                         }
                     } else {
                         ErrorState(
                             message = state.message,
-                            onRetry = { viewModel.fetchLineStatuses() }
+                            onRetry = { viewModel.onRetryTapped() }
                         )
                     }
                 }
@@ -168,7 +172,7 @@ private fun LastUpdatedText(timestamp: Long) {
 private fun SharedTransitionScope.LineStatusList(
     lines: List<UndergroundLine>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onLineClick: (String) -> Unit
+    onLineClick: (lineId: String, lineName: String, statusType: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -182,7 +186,7 @@ private fun SharedTransitionScope.LineStatusList(
                 line = line,
                 lineColor = lineColor,
                 animatedVisibilityScope = animatedVisibilityScope,
-                onClick = { onLineClick(line.id) }
+                onClick = { onLineClick(line.id, line.name, line.status.type.name) }
             )
         }
     }

@@ -66,6 +66,28 @@
     <string name="format_last_updated">Last updated: %s</string>
     <string name="format_station_image_desc">Station image for %s</string>
 
+    <!-- Line Details Cards -->
+    <string name="card_operation_hours">Operation Hours</string>
+    <string name="card_night_tube">Night Tube</string>
+    <string name="card_crowding_information">Crowding Information</string>
+    <string name="label_monday_friday">Monday - Friday</string>
+    <string name="label_saturday">Saturday</string>
+    <string name="label_sunday">Sunday</string>
+    <string name="hours_weekday">05:30 - 00:15</string>
+    <string name="hours_saturday">05:45 - 00:15</string>
+    <string name="hours_sunday">06:30 - 23:45</string>
+    <string name="night_tube_description">24-hour service on Friday and Saturday nights.</string>
+    <string name="night_tube_frequency">Every 10 mins</string>
+    <string name="label_frequency">Frequency:\u0020</string>
+    <string name="label_peak_times">Peak Times</string>
+    <string name="label_off_peak">Off-Peak</string>
+    <string name="crowding_peak_description">Very busy 08:00–09:30, 17:00–18:30</string>
+    <string name="crowding_offpeak_quiet">Quiet throughout the day</string>
+    <string name="crowding_offpeak_moderate">Moderate throughout the day</string>
+    <string name="crowding_offpeak_busy">Busy throughout the day</string>
+    <string name="crowding_offpeak_very_busy">Very busy throughout the day</string>
+    <string name="action_back">Back</string>
+
     <!-- Status Type Names -->
     <string name="status_type_good_service">Good Service</string>
     <string name="status_type_minor_delays">Minor Delays</string>

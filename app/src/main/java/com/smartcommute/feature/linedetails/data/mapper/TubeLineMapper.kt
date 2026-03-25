@@ -33,6 +33,7 @@ fun TubeLineEntity.toBasicDomain(): UndergroundLineDetails {
         ),
         brandColor = brandColor,
         lastUpdated = lastUpdated,
+        hasNightTube = hasNightTube,
         disruptions = emptyList(),
         closures = emptyList(),
         crowding = null
@@ -64,6 +65,7 @@ fun TubeLineEntity.toDetailedDomain(
         ),
         brandColor = brandColor,
         lastUpdated = lastUpdated,
+        hasNightTube = hasNightTube,
         disruptions = disruptions.map { it.toDomain() },
         closures = closures.map { it.toDomain() },
         crowding = crowding?.toDomain()

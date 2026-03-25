@@ -2,6 +2,7 @@ package com.smartcommute.feature.statusalerts.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.smartcommute.core.analytics.StatusAlertsAnalytics
 import com.smartcommute.feature.statusalerts.data.repository.StatusAlertsRepository
 import com.smartcommute.feature.statusalerts.domain.model.StatusAlert
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatusAlertsViewModel @Inject constructor(
-    private val repository: StatusAlertsRepository
+    private val repository: StatusAlertsRepository,
+    private val analytics: StatusAlertsAnalytics
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<StatusAlertsUiState>(StatusAlertsUiState.Loading)
@@ -39,6 +41,10 @@ class StatusAlertsViewModel @Inject constructor(
                         alarmCount = alarms.size,
                         canCreateMore = enabledCount < 10
                     )
+                    analytics.setAlarmUserProperties(
+                        alarmCount = alarms.size,
+                        hasActiveAlarm = enabledCount > 0
+                    )
                 }
         }
     }
@@ -46,6 +52,15 @@ class StatusAlertsViewModel @Inject constructor(
     fun createAlarm(alarm: StatusAlert) {
         viewModelScope.launch {
             val result = repository.createAlarm(alarm)
+            result.onSuccess {
+                analytics.logAlarmCreated(
+                    lineCount = alarm.selectedTubeLines.size,
+                    dayCount = alarm.selectedDays.size,
+                    isRecurring = alarm.isRecurring,
+                    hour = alarm.time.hour,
+                    minute = alarm.time.minute
+                )
+            }
             result.onFailure { exception ->
                 _uiState.value = StatusAlertsUiState.Error(
                     exception.message ?: "Failed to create alarm"
@@ -57,6 +72,14 @@ class StatusAlertsViewModel @Inject constructor(
     fun updateAlarm(alarm: StatusAlert) {
         viewModelScope.launch {
             val result = repository.updateAlarm(alarm)
+            result.onSuccess {
+                analytics.logAlarmUpdated(
+                    alarmId = alarm.id,
+                    lineCount = alarm.selectedTubeLines.size,
+                    dayCount = alarm.selectedDays.size,
+                    isRecurring = alarm.isRecurring
+                )
+            }
             result.onFailure { exception ->
                 _uiState.value = StatusAlertsUiState.Error(
                     exception.message ?: "Failed to update alarm"
@@ -68,6 +91,9 @@ class StatusAlertsViewModel @Inject constructor(
     fun deleteAlarm(alarmId: String) {
         viewModelScope.launch {
             val result = repository.deleteAlarm(alarmId)
+            result.onSuccess {
+                analytics.logAlarmDeleted(alarmId)
+            }
             result.onFailure { exception ->
                 _uiState.value = StatusAlertsUiState.Error(
                     exception.message ?: "Failed to delete alarm"
@@ -83,11 +109,18 @@ class StatusAlertsViewModel @Inject constructor(
             } else {
                 repository.disableAlarm(alarmId)
             }
+            result.onSuccess {
+                analytics.logAlarmToggled(alarmId, isEnabled)
+            }
             result.onFailure { exception ->
                 _uiState.value = StatusAlertsUiState.Error(
                     exception.message ?: "Failed to toggle alarm"
                 )
             }
         }
+    }
+
+    fun onCreateAlarmTapped(currentAlarmCount: Int) {
+        analytics.logCreateTapped(currentAlarmCount)
     }
 }

@@ -2,6 +2,13 @@ package com.smartcommute.feature.linestatus.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
+data class ServiceTypeDto(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("uri")
+    val uri: String? = null
+)
+
 data class LineStatusDto(
     @SerializedName("id")
     val id: String,
@@ -10,7 +17,9 @@ data class LineStatusDto(
     @SerializedName("modeName")
     val modeName: String,
     @SerializedName("lineStatuses")
-    val lineStatuses: List<LineStatusResponseDto>
+    val lineStatuses: List<LineStatusResponseDto>,
+    @SerializedName("serviceTypes")
+    val serviceTypes: List<ServiceTypeDto> = emptyList()
 )
 
 data class LineStatusResponseDto(

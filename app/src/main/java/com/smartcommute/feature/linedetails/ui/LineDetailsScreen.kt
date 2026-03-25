@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,9 +68,8 @@ fun SharedTransitionScope.LineDetailsScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Back",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
+                            text = stringResource(R.string.line_details_title),
+                            style = MaterialTheme.typography.titleLarge,
                             color = TextPrimary
                         )
                     },
@@ -144,15 +144,13 @@ fun SharedTransitionScope.LineDetailsScreen(
                         )
                     }
 
-                    // Night Tube card — conditional on line ID
-                    val hasNightTube = lineDetails.id.lowercase() in setOf(
-                        "central", "jubilee", "northern", "piccadilly", "victoria"
-                    )
-                    if (hasNightTube) {
+                    // Night Tube card — shown when API reports night service for this line
+                    if (lineDetails.hasNightTube) {
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
                             NightTubeCard(
-                                lineId = lineDetails.id,
+                                description = stringResource(R.string.night_tube_description),
+                                frequency = stringResource(R.string.night_tube_frequency),
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                         }

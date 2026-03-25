@@ -27,7 +27,7 @@ fun AppNavigation(
         ) {
             composable(NavigationScreen.LineStatus.route) {
                 LineStatusScreen(
-                    onLineClick = { lineId ->
+                    onLineClick = { lineId, _, _ ->
                         navController.navigate(NavigationScreen.LineDetails.createRoute(lineId))
                     },
                     animatedVisibilityScope = this

@@ -19,25 +19,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
+import com.smartcommute.R
 
 private val LabelColor = Color(0xFF4A5565)
 private val ValueColor = Color(0xFF0A0A0A)
 private val BorderColor = Color(0x1A000000)
 
-private val nightTubeLines = setOf("central", "jubilee", "northern", "piccadilly", "victoria")
-
 @Composable
 fun NightTubeCard(
-    lineId: String,
+    description: String,
+    frequency: String,
     modifier: Modifier = Modifier
 ) {
-    if (lineId.lowercase() !in nightTubeLines) return
+    val title = stringResource(R.string.card_night_tube)
+    val frequencyLabel = stringResource(R.string.label_frequency)
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -48,17 +50,16 @@ fun NightTubeCard(
         Column(
             modifier = Modifier.padding(24.dp)
         ) {
-            // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Outlined.NightsStay,
-                    contentDescription = "Night Tube",
+                    contentDescription = title,
                     modifier = Modifier.size(20.dp),
                     tint = ValueColor
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Night Tube",
+                    text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = ValueColor
@@ -67,23 +68,21 @@ fun NightTubeCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Description
             Text(
-                text = "24-hour service on Friday and Saturday nights.",
+                text = description,
                 fontSize = 14.sp,
                 color = ValueColor
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Frequency
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = LabelColor, fontSize = 16.sp)) {
-                        append("Frequency: ")
+                        append(frequencyLabel)
                     }
                     withStyle(SpanStyle(color = ValueColor, fontSize = 16.sp)) {
-                        append("Every 10 mins")
+                        append(frequency)
                     }
                 }
             )

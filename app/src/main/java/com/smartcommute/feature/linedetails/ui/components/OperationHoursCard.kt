@@ -20,18 +20,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.smartcommute.R
 
 private val LabelColor = Color(0xFF4A5565)
 private val ValueColor = Color(0xFF0A0A0A)
-private val BorderColor = Color(0x1A000000) // Black at 10% opacity
+private val BorderColor = Color(0x1A000000)
 
 @Composable
 fun OperationHoursCard(
     modifier: Modifier = Modifier
 ) {
+    val title = stringResource(R.string.card_operation_hours)
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -41,17 +45,16 @@ fun OperationHoursCard(
         Column(
             modifier = Modifier.padding(24.dp)
         ) {
-            // Header
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Outlined.Schedule,
-                    contentDescription = "Operation Hours",
+                    contentDescription = title,
                     modifier = Modifier.size(20.dp),
                     tint = ValueColor
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Operation Hours",
+                    text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = ValueColor
@@ -60,12 +63,20 @@ fun OperationHoursCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Hours rows
-            HoursRow(label = "Monday - Friday", value = "05:30 - 00:15")
+            HoursRow(
+                label = stringResource(R.string.label_monday_friday),
+                value = stringResource(R.string.hours_weekday)
+            )
             Spacer(modifier = Modifier.height(12.dp))
-            HoursRow(label = "Saturday", value = "05:45 - 00:15")
+            HoursRow(
+                label = stringResource(R.string.label_saturday),
+                value = stringResource(R.string.hours_saturday)
+            )
             Spacer(modifier = Modifier.height(12.dp))
-            HoursRow(label = "Sunday", value = "06:30 - 23:45")
+            HoursRow(
+                label = stringResource(R.string.label_sunday),
+                value = stringResource(R.string.hours_sunday)
+            )
         }
     }
 }
@@ -76,15 +87,7 @@ private fun HoursRow(label: String, value: String) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            color = LabelColor
-        )
-        Text(
-            text = value,
-            fontSize = 16.sp,
-            color = ValueColor
-        )
+        Text(text = label, fontSize = 16.sp, color = LabelColor)
+        Text(text = value, fontSize = 16.sp, color = ValueColor)
     }
 }
