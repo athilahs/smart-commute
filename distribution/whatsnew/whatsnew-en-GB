@@ -1,15 +1,8 @@
-SmartCommute v1.0.4
+SmartCommute v1.0.5
 
 New:
-• Add line icons to tube line picker in alarm bottom sheet
-• Add centered drag handle to bottom sheet
-
-Fixed:
-• Remove problematic offset-based dismissal check
-• Allow bottom sheet dismissal only with significant drag
-
-Improved:
-• Cleaner line details with service hours and disruption ti...
+• Remove AD_ID permission added by Firebase Analytics
+• Add Firebase GA4 analytics and parse night tube from TfL API
 
 Questions or feedback? Leave a review or contact us!
 
