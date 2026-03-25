@@ -184,11 +184,6 @@ private fun SharedTransitionScope.LineStatusList(
                 animatedVisibilityScope = animatedVisibilityScope,
                 onClick = { onLineClick(line.id) }
             )
-            if (line != lines.last()) {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-            }
         }
     }
 }
